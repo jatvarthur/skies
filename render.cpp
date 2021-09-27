@@ -8,8 +8,8 @@ using namespace Gdiplus;
 
 struct Symbol {
 	char ch;
-	int8_t fg;
-	int8_t bg;
+	color_t fg;
+	color_t bg;
 };
 
 struct RenderContext {
@@ -69,19 +69,23 @@ bool renderInit(HWND hWnd, int width, int height)
 void render()
 {
 	RECT rect;
-	GetClientRect(pCtx->hWnd , &rect);
-	Bitmap memBitmap(rect.right, rect.bottom);
-	Graphics g(&memBitmap);
+	GetClientRect(pCtx->hWnd, &rect);
+	
+	HDC hDC = GetDC(pCtx->hWnd);
+	HDC memDC = CreateCompatibleDC(hDC);
+	HBITMAP memBitmap = CreateCompatibleBitmap(hDC, rect.right, rect.bottom);
+	SelectObject(memDC, memBitmap);
+
+	Graphics g(memDC);
 	g.Clear(Color::AliceBlue);
 	g.SetPageUnit(UnitPixel);
 	RectF bounds(0, 0, float(16 * FONTW), float(16 * FONTH));
-	g.DrawImage(pCtx->pFontTex, bounds);
+    g.DrawImage(pCtx->pFontTex, bounds);
 
-	HDC hDC = GetDC(pCtx->hWnd);
-	Graphics s(hDC);
-	s.DrawImage(&memBitmap, 0, 0);
-	//BitBlt(hDC, 0, 0, rect.right, rect.bottom, g.GetHDC(), 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, rect.right, rect.bottom, memDC, 0, 0, SRCCOPY);
+
 	ReleaseDC(pCtx->hWnd, hDC);
+	ReleaseDC(pCtx->hWnd, memDC);
 }
 
 void renderClean()
