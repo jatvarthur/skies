@@ -4,11 +4,13 @@
 #include "renderos.h"
 
 #define MAX_LOADSTRING 100
-#define WIDTH   160
-#define HEIGHT  100
+#define WIDTH   100
+#define HEIGHT  80
 
 HINSTANCE g_hInstance;
 HWND g_hWnd;
+int g_fps;
+
 static LPCWSTR WINDOW_CLASS_NAME = L"SkiesConsoleWndClass";
 
 BOOL createWindow(HINSTANCE, int);
@@ -33,13 +35,30 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
         return FALSE;
     }
 
+    LARGE_INTEGER counterFreq;
+    QueryPerformanceFrequency(&counterFreq);
+
+    int fpsCounter = 0;
+    int64_t fpsDelta = 0;
+
     while (processMessages()) {
-        // todo: better handle iconic state
         if (IsIconic(g_hWnd)) {
-            Sleep(0);
+            WaitMessage();
         } else {
+            LARGE_INTEGER frameStart, frameEnd;
+            QueryPerformanceCounter(&frameStart);
             gameStep();
             render();
+            QueryPerformanceCounter(&frameEnd);
+
+            int64_t tickDelta = frameEnd.QuadPart - frameStart.QuadPart;
+            fpsCounter += 1;
+            fpsDelta += tickDelta;
+            if (fpsDelta > counterFreq.QuadPart) {
+                g_fps = fpsCounter;
+                fpsCounter = 0;
+                fpsDelta = 0;
+            }
         }
     }
 

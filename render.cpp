@@ -1,21 +1,20 @@
-#include <cassert>
 #include "winos.h"
-#include <gdiplus.h>
 #include "render.h"
 #include "renderos.h"
 
-using namespace Gdiplus;
 
 struct Symbol {
 	char ch;
 	color_t fg;
 	color_t bg;
+	uint8_t unused;
 };
 
 struct RenderContext {
 	HWND hWnd;
 	ULONG_PTR gToken;
-	Image* pFontTex;
+	HFONT hFont;
+	HBITMAP hOffscreenBuffer;
 
 	int width;
 	int height;
@@ -24,10 +23,28 @@ struct RenderContext {
 
 static RenderContext* pCtx = nullptr;
 
+static const COLORREF TERMINAL_COLORS[] = {
+	RGB(  1,   1,   1),
+	RGB(222,  56,  43),
+	RGB( 57, 181,  74),
+	RGB(255, 199,   6),
+	RGB(  0, 111, 184),
+	RGB(118,  38, 113),
+	RGB( 44, 181, 233),
+	RGB(204, 204, 204),
+	RGB(128, 128, 128),
+	RGB(255,   0,   0),
+	RGB(  0, 255,   0),
+	RGB(255, 255,   0),
+	RGB(  0,   0, 255),
+	RGB(255,   0, 255),
+	RGB(  0, 255, 255),
+	RGB(255, 255, 255)
+};
 
-static LPCWSTR FONT_FILE_NAME = L".\\assets\\terminal8x8_aa_ro.png";
+#define NELEMS(a) (sizeof(a) / sizeof(a[0]))
 
-int putCh(int x, int y, char ch, color_t fg, color_t bg)
+int drawChar(int x, int y, char ch, color_t fg, color_t bg)
 {
 	assert(pCtx != nullptr);
 	assert(x >= 0 && x < pCtx->width);
@@ -41,29 +58,109 @@ int putCh(int x, int y, char ch, color_t fg, color_t bg)
 	return 1;
 }
 
-int putStr(int x, int y, const char* s, color_t fg, color_t bg)
+int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 {
+	assert(pCtx != nullptr);
+	assert(x >= 0 && x < pCtx->width);
+	assert(y >= 0 && y < pCtx->height);
+	assert(s != nullptr);
 
-	return 0;
+	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
+	while (char c = *(s++)) {
+		p->ch = c;
+		p->fg = fg;
+		p->bg = bg;
+		p += 1;
+	}
+
+	return 1;
+}
+
+static int CALLBACK enumFontsProc(const LOGFONTW* lplf, const TEXTMETRIC* lptm, 
+	DWORD dwType, LPARAM lpData)
+{
+	if (lplf->lfHeight == FONTH && lplf->lfWidth == FONTW) {
+		*((LOGFONT*)lpData) = *lplf;
+		return 1;
+	}
+	return 1;
+}
+
+static bool findFont(HDC hdc, LOGFONT* result) {
+	LOGFONT logfont;
+	ZeroMemory(&logfont, sizeof logfont);
+	logfont.lfCharSet = DEFAULT_CHARSET;
+	logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
+	lstrcpy(logfont.lfFaceName, L"Terminal");
+
+	result->lfHeight = 0;
+	EnumFontFamiliesExW(hdc, &logfont, enumFontsProc, (LPARAM)result, 0);
+	return result->lfHeight != 0;
 }
 
 bool renderInit(HWND hWnd, int width, int height)
-{
-	ULONG_PTR token;
-	GdiplusStartupInput startupInput;
-	if (GdiplusStartup(&token, &startupInput, NULL) != Status::Ok) {
-		return false;
-	}
-	
+{	
 	pCtx = new RenderContext;
 	pCtx->hWnd = hWnd;
-	pCtx->gToken = token;
+	
+	HDC hDC = GetDC(pCtx->hWnd);
+	LOGFONTW font;
+	findFont(hDC, &font);
+	pCtx->hFont = CreateFontIndirectW(&font);
+	pCtx->hOffscreenBuffer = CreateCompatibleBitmap(hDC, width * FONTW, height * FONTH);
+	ReleaseDC(pCtx->hWnd, hDC);
+
+	int bufSize = height * width;
 	pCtx->width = width;
 	pCtx->height = height;
-	pCtx->screenBuffer = new Symbol[height * width];
-	pCtx->pFontTex = new Image(FONT_FILE_NAME); // todo: check
-	
+	pCtx->screenBuffer = new Symbol[bufSize];
+	for (int i = 0; i < bufSize; ++i) {
+		pCtx->screenBuffer[i].bg = COLOR_BLACK;
+		pCtx->screenBuffer[i].fg = COLOR_WHITE;
+		pCtx->screenBuffer[i].ch = ' ';
+	}
+
 	return true;
+}
+
+void renderClean()
+{
+	DeleteObject(pCtx->hFont);
+	DeleteObject(pCtx->hOffscreenBuffer);
+
+	delete[] pCtx->screenBuffer;
+	delete pCtx;
+	pCtx = nullptr;
+}
+
+static void renderScreen(HDC hdc)
+{
+	for (int j = 0; j < pCtx->height; ++j) {
+		for (int i = 0; i < pCtx->width; ++i) {
+			int bufIdx = j * pCtx->width + i;
+			int fg = pCtx->screenBuffer[bufIdx].fg;
+			int bg = pCtx->screenBuffer[bufIdx].bg;
+
+			assert(fg >= 0 && fg < NELEMS(TERMINAL_COLORS));
+			assert(bg >= 0 && bg < NELEMS(TERMINAL_COLORS));
+
+			SetTextColor(hdc, TERMINAL_COLORS[fg]);
+			SetBkColor(hdc, TERMINAL_COLORS[bg]);
+			TextOutA(hdc, i * FONTW, j * FONTH, &pCtx->screenBuffer[bufIdx].ch, 1);
+		}
+	}
+}
+
+extern int g_fps;
+
+static void renderFps(HDC hdc)
+{
+	char buf[40] = { 0 };
+	snprintf(buf, 40, "%dfps", g_fps);
+
+	SetTextColor(hdc, 0xFFFFFF);
+	SetBkColor(hdc, 0xBB);
+	TextOutA(hdc, 10, 10, buf, strlen(buf));
 }
 
 void render()
@@ -72,27 +169,19 @@ void render()
 	GetClientRect(pCtx->hWnd, &rect);
 	
 	HDC hDC = GetDC(pCtx->hWnd);
-	HDC memDC = CreateCompatibleDC(hDC);
-	HBITMAP memBitmap = CreateCompatibleBitmap(hDC, rect.right, rect.bottom);
-	SelectObject(memDC, memBitmap);
+	HDC hMemDC = CreateCompatibleDC(hDC);
+	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, pCtx->hOffscreenBuffer);
+	HFONT hOldFont = (HFONT)SelectObject(hMemDC, pCtx->hFont);
 
-	Graphics g(memDC);
-	g.Clear(Color::AliceBlue);
-	g.SetPageUnit(UnitPixel);
-	RectF bounds(0, 0, float(16 * FONTW), float(16 * FONTH));
-    g.DrawImage(pCtx->pFontTex, bounds);
+	PatBlt(hMemDC, 0, 0, pCtx->width * FONTW, pCtx->height * FONTH, BLACKNESS);
+	renderScreen(hMemDC);
 
-	BitBlt(hDC, 0, 0, rect.right, rect.bottom, memDC, 0, 0, SRCCOPY);
+	SelectObject(hMemDC, hOldFont);
+	renderFps(hMemDC);
 
+	BitBlt(hDC, 0, 0, rect.right, rect.bottom, hMemDC, 0, 0, SRCCOPY);
+
+	SelectObject(hMemDC, hOldBitmap);
+	ReleaseDC(pCtx->hWnd, hMemDC);
 	ReleaseDC(pCtx->hWnd, hDC);
-	ReleaseDC(pCtx->hWnd, memDC);
-}
-
-void renderClean()
-{
-	GdiplusShutdown(pCtx->gToken);
-
-	delete [] pCtx->screenBuffer;
-	delete pCtx;
-	pCtx = nullptr;
 }
