@@ -1,11 +1,10 @@
 #include "winos.h"
 #include "resource.h"
-#include "engine.h"
+#include "game.h"
 #include "renderos.h"
 
+
 #define MAX_LOADSTRING 100
-#define WIDTH   100
-#define HEIGHT  80
 
 HINSTANCE g_hInstance;
 HWND g_hWnd;
@@ -23,15 +22,16 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     g_hInstance = hInstance;
+
+    if (!gameInit()) {
+        return FALSE;
+    }
+
     if (!createWindow (hInstance, nCmdShow)) {
         return FALSE;
     }
 
-    if (!renderInit(g_hWnd, WIDTH, HEIGHT)) {
-        return FALSE;
-    }
-
-    if (!gameInit()) {
+    if (!renderInit(g_hWnd, g_windowWidth, g_windowHeight)) {
         return FALSE;
     }
 
@@ -41,12 +41,13 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
     int fpsCounter = 0;
     int64_t fpsDelta = 0;
 
+    LARGE_INTEGER frameStart, frameEnd;
+    QueryPerformanceCounter(&frameStart);
+
     while (processMessages()) {
         if (IsIconic(g_hWnd)) {
             WaitMessage();
         } else {
-            LARGE_INTEGER frameStart, frameEnd;
-            QueryPerformanceCounter(&frameStart);
             gameStep();
             render();
             QueryPerformanceCounter(&frameEnd);
@@ -59,6 +60,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
                 fpsCounter = 0;
                 fpsDelta = 0;
             }
+            frameStart = frameEnd;
         }
     }
 
@@ -93,7 +95,7 @@ BOOL createWindow(HINSTANCE hInstance, int nCmdShow)
     }
 
     DWORD style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-    RECT rect = { 0, 0, WIDTH * FONTW, HEIGHT * FONTH };
+    RECT rect = { 0, 0, g_windowWidth * FONTW, g_windowHeight * FONTH };
     AdjustWindowRect(&rect, style, FALSE);
     g_hWnd = CreateWindowW((LPCWSTR)aWndClass, title, WS_OVERLAPPED | style,
         CW_USEDEFAULT, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);

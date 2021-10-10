@@ -1,0 +1,13 @@
+Width Height
+Width*Height chars with map configuration
+
+Default_fg Default_bg
+
+Number_of_object_types
+-- Object_type_desc:
+Object_type_id: char Number_of_components
+-- Component_desc:
+Component_id: [R] Number_of_params ...params
+  -- Render component:
+  R 2 fg bg
+  R 3 fg bg char_code

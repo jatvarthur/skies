@@ -1,0 +1,2 @@
+Window_Width Window_Height
+Level_file_name

@@ -141,16 +141,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="engine.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="renderos.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="winos.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="engine.h" />
+    <ClInclude Include="game.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="engine.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="render.cpp" />
   </ItemGroup>
   <ItemGroup>

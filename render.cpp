@@ -2,9 +2,10 @@
 #include "render.h"
 #include "renderos.h"
 
+typedef char schar_t;
 
 struct Symbol {
-	char ch;
+	schar_t ch; // todo: wchar_t instead unused
 	color_t fg;
 	color_t bg;
 	uint8_t unused;
@@ -66,11 +67,10 @@ int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 	assert(s != nullptr);
 
 	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
-	while (char c = *(s++)) {
-		p->ch = c;
+	for ( ; *s != '\0' && x < pCtx->width; ++p, ++s, ++x) {
+		p->ch = *s;
 		p->fg = fg;
 		p->bg = bg;
-		p += 1;
 	}
 
 	return 1;
@@ -81,7 +81,7 @@ static int CALLBACK enumFontsProc(const LOGFONTW* lplf, const TEXTMETRIC* lptm,
 {
 	if (lplf->lfHeight == FONTH && lplf->lfWidth == FONTW) {
 		*((LOGFONT*)lpData) = *lplf;
-		return 1;
+		return 0;
 	}
 	return 1;
 }
@@ -133,9 +133,16 @@ void renderClean()
 	pCtx = nullptr;
 }
 
+const int MAX_BATCH = 255;
+
 static void renderScreen(HDC hdc)
 {
+	int curFg = -1;
+	int curBg = -1;
 	for (int j = 0; j < pCtx->height; ++j) {
+		schar_t batch[MAX_BATCH];
+		int batchSize = 0;
+		int batchX = 0;
 		for (int i = 0; i < pCtx->width; ++i) {
 			int bufIdx = j * pCtx->width + i;
 			int fg = pCtx->screenBuffer[bufIdx].fg;
@@ -144,9 +151,27 @@ static void renderScreen(HDC hdc)
 			assert(fg >= 0 && fg < NELEMS(TERMINAL_COLORS));
 			assert(bg >= 0 && bg < NELEMS(TERMINAL_COLORS));
 
-			SetTextColor(hdc, TERMINAL_COLORS[fg]);
-			SetBkColor(hdc, TERMINAL_COLORS[bg]);
-			TextOutA(hdc, i * FONTW, j * FONTH, &pCtx->screenBuffer[bufIdx].ch, 1);
+			if (((curBg != bg || curFg != fg) && batchSize > 0) || batchSize >= MAX_BATCH) {
+				TextOutA(hdc, batchX * FONTW, j * FONTH, batch, batchSize);
+				batchSize = 0;
+				batchX = i;
+			}
+
+			batch[batchSize++] = pCtx->screenBuffer[bufIdx].ch;
+
+			if (curBg != bg) {
+				SetBkColor(hdc, TERMINAL_COLORS[bg]);
+				curBg = bg;
+			}
+
+			if (curFg != fg) {
+				SetTextColor(hdc, TERMINAL_COLORS[fg]);
+				curFg = fg;
+			}
+		}
+
+		if (batchSize > 0) {
+			TextOutA(hdc, batchX * FONTW, j * FONTH, batch, batchSize);
 		}
 	}
 }
@@ -173,7 +198,6 @@ void render()
 	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, pCtx->hOffscreenBuffer);
 	HFONT hOldFont = (HFONT)SelectObject(hMemDC, pCtx->hFont);
 
-	PatBlt(hMemDC, 0, 0, pCtx->width * FONTW, pCtx->height * FONTH, BLACKNESS);
 	renderScreen(hMemDC);
 
 	SelectObject(hMemDC, hOldFont);
