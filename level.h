@@ -14,10 +14,21 @@ struct ObjectDesc {
 struct LevelDesc {
 	int width;
 	int height;
-	color_t defaultBg;
-	color_t defaultFg;
-	std::vector<tid_t> map;
+	SkiiImage tilemap;
 	Registry<tid_t, ObjectDesc> objects;
+
+	// todo: ?
+	LevelDesc()
+		: width(0)
+		, height(0)
+		, tilemap(SkiiImage::invalid())
+	{}
+
+	LevelDesc(int w, int h, const SkiiImage& tm)
+		: width(w)
+		, height(h)
+		, tilemap(tm)
+	{}
 };
 
-std::shared_ptr<LevelDesc> loadLevel(const std::string& fileName);
+LevelDesc loadLevel(const std::string& name);

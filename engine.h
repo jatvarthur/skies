@@ -30,3 +30,4 @@ void Registry<ID, T>::put(ID id, const T& item)
 }
 
 std::string getTextAssetFileName(const std::string& name);
+std::string getMapAssetFileName(const std::string& name);

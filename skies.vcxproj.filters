@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Formats">
+      <UniqueIdentifier>{2d2eecec-ae0e-4dcc-a9ed-4e7d5f8e1465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{1a41733b-eba6-4a3c-ad2d-52c6e714da6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="winos.h">
@@ -47,13 +53,16 @@
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="render.cpp">
+    <ClCompile Include="renderos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skii_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,5 +78,25 @@
     <Image Include="skies.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="game_format.txt">
+      <Filter>Formats</Filter>
+    </Text>
+    <Text Include="level_format.txt">
+      <Filter>Formats</Filter>
+    </Text>
+    <Text Include="skii_format.txt">
+      <Filter>Formats</Filter>
+    </Text>
+    <Text Include="assets\game.txt">
+      <Filter>Assets</Filter>
+    </Text>
+    <Text Include="assets\level1.map.skii.txt">
+      <Filter>Assets</Filter>
+    </Text>
+    <Text Include="assets\level1.txt">
+      <Filter>Assets</Filter>
+    </Text>
   </ItemGroup>
 </Project>

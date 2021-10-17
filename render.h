@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <cassert>
+#include <iostream>
 
 enum Color {
 	COLOR_BLACK = 0,
@@ -22,5 +24,64 @@ enum Color {
 
 typedef uint8_t color_t;
 
+typedef char schar_t;
+
+struct Symbol {
+	schar_t ch;
+	color_t fg;
+	color_t bg;
+	uint8_t flags; // reserved, must be 0
+};
+
+class SkiiImage final {
+public:
+	SkiiImage(int width, int height);
+	SkiiImage(const SkiiImage& rhs);
+	~SkiiImage();
+
+	const SkiiImage &operator=(const SkiiImage& rhs);
+
+	int width() const 
+	{ 
+		return width_;
+	}
+
+	int height() const
+	{
+		return height_;
+	}
+
+	Symbol at(int x, int y) const
+	{
+		assert(x >= 0 && x < width_);
+		assert(y >= 0 && y < height_);
+		return buffer_[y * width_ + x];
+	}
+
+	bool isValid() const
+	{
+		return buffer_ != nullptr;
+	}
+
+	operator bool() const
+	{
+		return isValid();
+	}
+
+public:
+	static SkiiImage loadFromStream(std::istream& is);
+	static SkiiImage invalid();
+
+private:
+	void Swap(SkiiImage& rhs) noexcept;
+
+private:
+	int width_;
+	int height_;
+	Symbol* buffer_;
+};
+
+
 int drawChar(int x, int y, char ch, color_t fg, color_t bg);
 int drawString(int x, int y, const char* s, color_t fg, color_t bg);
+int drawImage(int xDst, int yDst, int xSrx, int ySrc, int wSrc, int hSrc, const SkiiImage& image);

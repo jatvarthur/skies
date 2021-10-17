@@ -1,7 +1,5 @@
 Width Height
-Width*Height chars with map configuration
-
-Default_fg Default_bg
+Tilemap_name(without ext)
 
 Number_of_object_types
 -- Object_type_desc:

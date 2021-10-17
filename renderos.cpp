@@ -2,14 +2,6 @@
 #include "render.h"
 #include "renderos.h"
 
-typedef char schar_t;
-
-struct Symbol {
-	schar_t ch; // todo: wchar_t instead unused
-	color_t fg;
-	color_t bg;
-	uint8_t unused;
-};
 
 struct RenderContext {
 	HWND hWnd;
@@ -75,6 +67,30 @@ int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 
 	return 1;
 }
+
+int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const SkiiImage& image)
+{
+	assert(pCtx != nullptr);
+	assert(image.isValid());
+	assert(xDst >= 0 && xDst < pCtx->width);
+	assert(yDst >= 0 && yDst < pCtx->height);
+	assert(xSrc >= 0);
+	assert(ySrc >= 0);
+	assert(wSrc > 0 && xSrc + wSrc <= image.width());
+	assert(hSrc > 0 && ySrc + hSrc <= image.height());
+
+	int hOut = min(pCtx->height - yDst, hSrc);
+	int wOut = min(pCtx->width - xDst, wSrc);
+	for (int j = 0; j < hOut; ++j) {
+		Symbol* pdest = &pCtx->screenBuffer[(yDst + j) * pCtx->width + xDst];
+		for (int i = xSrc; i < xSrc + wOut; ++i, ++pdest) {
+			*pdest = image.at(i, ySrc + j);
+		}
+	}
+
+	return 1;
+}
+
 
 static int CALLBACK enumFontsProc(const LOGFONTW* lplf, const TEXTMETRIC* lptm, 
 	DWORD dwType, LPARAM lpData)

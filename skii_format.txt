@@ -1,0 +1,11 @@
+"skii" Version
+Width Height Numer_color_chars Default_fg Default_bg
+
+-- Number_color_chars overrides:
+Format ...params
+  0 Char Fg Bg
+  1 Char Fg Bg Code
+  2 X Y Fg Bg
+  3 X Y Fg Bg Code
+
+Width*Height chars with image

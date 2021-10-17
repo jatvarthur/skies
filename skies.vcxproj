@@ -155,7 +155,8 @@
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="level.cpp" />
-    <ClCompile Include="render.cpp" />
+    <ClCompile Include="renderos.cpp" />
+    <ClCompile Include="skii_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="skies.rc" />
@@ -163,6 +164,14 @@
   <ItemGroup>
     <Image Include="skies.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\game.txt" />
+    <Text Include="assets\level1.map.skii.txt" />
+    <Text Include="assets\level1.txt" />
+    <Text Include="game_format.txt" />
+    <Text Include="level_format.txt" />
+    <Text Include="skii_format.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
