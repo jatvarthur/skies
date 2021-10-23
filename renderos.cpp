@@ -7,6 +7,7 @@ struct RenderContext {
 	HWND hWnd;
 	ULONG_PTR gToken;
 	HFONT hFont;
+	HDC hOffscreenDC;
 	HBITMAP hOffscreenBuffer;
 
 	int width;
@@ -140,10 +141,14 @@ bool renderInit(HWND hWnd, int width, int height)
 	pCtx->hWnd = hWnd;
 	
 	HDC hDC = GetDC(pCtx->hWnd);
+	pCtx->hOffscreenDC = CreateCompatibleDC(hDC);
+
 	LOGFONTW font;
 	findFont(hDC, &font);
 	pCtx->hFont = CreateFontIndirectW(&font);
+	pCtx->hFont = (HFONT)SelectObject(pCtx->hOffscreenDC, pCtx->hFont);
 	pCtx->hOffscreenBuffer = CreateCompatibleBitmap(hDC, width * FONTW, height * FONTH);
+	pCtx->hOffscreenBuffer = (HBITMAP)SelectObject(pCtx->hOffscreenDC, pCtx->hOffscreenBuffer);
 	ReleaseDC(pCtx->hWnd, hDC);
 
 	int bufSize = height * width;
@@ -161,8 +166,11 @@ bool renderInit(HWND hWnd, int width, int height)
 
 void renderClean()
 {
+	pCtx->hFont = (HFONT)SelectObject(pCtx->hOffscreenDC, pCtx->hFont);
+	pCtx->hOffscreenBuffer = (HBITMAP)SelectObject(pCtx->hOffscreenDC, pCtx->hOffscreenBuffer);
 	DeleteObject(pCtx->hFont);
 	DeleteObject(pCtx->hOffscreenBuffer);
+	DeleteDC(pCtx->hOffscreenDC);
 
 	delete[] pCtx->screenBuffer;
 	delete pCtx;
@@ -226,22 +234,12 @@ static void renderFps(HDC hdc)
 
 void render()
 {
+	renderScreen(pCtx->hOffscreenDC);
+	renderFps(pCtx->hOffscreenDC);
+
 	RECT rect;
-	GetClientRect(pCtx->hWnd, &rect);
-	
+	GetClientRect(pCtx->hWnd, &rect);	
 	HDC hDC = GetDC(pCtx->hWnd);
-	HDC hMemDC = CreateCompatibleDC(hDC);
-	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, pCtx->hOffscreenBuffer);
-	HFONT hOldFont = (HFONT)SelectObject(hMemDC, pCtx->hFont);
-
-	renderScreen(hMemDC);
-
-	SelectObject(hMemDC, hOldFont);
-	renderFps(hMemDC);
-
-	BitBlt(hDC, 0, 0, rect.right, rect.bottom, hMemDC, 0, 0, SRCCOPY);
-
-	SelectObject(hMemDC, hOldBitmap);
-	ReleaseDC(pCtx->hWnd, hMemDC);
+	BitBlt(hDC, 0, 0, rect.right, rect.bottom, pCtx->hOffscreenDC, 0, 0, SRCCOPY);
 	ReleaseDC(pCtx->hWnd, hDC);
 }
