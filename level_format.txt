@@ -1,11 +1,11 @@
 Width Height
 Tilemap_name(without ext)
 
-Number_of_object_types
--- Object_type_desc:
-Object_type_id: char Number_of_components
--- Component_desc:
-Component_id: [R] Number_of_params ...params
-  -- Render component:
-  R 2 fg bg
-  R 3 fg bg char_code
+Number_of_objects
+-- Object_desc:
+EntityId
+-- Component_descs: P pos, Y phys, R render, S script
+P x y orientation
+Y mass
+R charcode fg bg
+S scriptName Number_params ...params

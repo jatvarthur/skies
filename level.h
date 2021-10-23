@@ -3,19 +3,13 @@
 #include <memory>
 #include "engine.h"
 #include "render.h"
-
-// Object Type Id
-typedef char tid_t;
-
-struct ObjectDesc {
-	tid_t id;
-};
+#include "ecs.h"
 
 struct LevelDesc {
 	int width;
 	int height;
 	SkiiImage tilemap;
-	Registry<tid_t, ObjectDesc> objects;
+
 
 	// todo: ?
 	LevelDesc()
@@ -31,4 +25,4 @@ struct LevelDesc {
 	{}
 };
 
-LevelDesc loadLevel(const std::string& name);
+bool loadLevel(const std::string& name, LevelDesc& levelDesc, EntityManager& entityManager);

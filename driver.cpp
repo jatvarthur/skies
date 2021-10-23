@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "game.h"
 #include "renderos.h"
+#include "keybrdos.h"
 
 
 #define MAX_LOADSTRING 100
@@ -48,7 +49,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
         if (IsIconic(g_hWnd)) {
             WaitMessage();
         } else {
-            gameStep();
+            keyBeforeFrame();
+            // todo: delta
+            gameStep(0);
             render();
             QueryPerformanceCounter(&frameEnd);
 
@@ -61,6 +64,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
                 fpsDelta = 0;
             }
             frameStart = frameEnd;
+
+            keyAfterFrame();
         }
     }
 
@@ -135,6 +140,15 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;*/
+    case WM_KEYDOWN:
+        keySetState((Key)(wParam & KEY_LAST), true);
+        break;
+    case WM_KEYUP:
+        keySetState((Key)(wParam & KEY_LAST), false);
+        break;
+    case WM_CHAR:
+        // todo: support character buffer
+        break;
     case WM_ERASEBKGND:
         return TRUE;
     case WM_DESTROY:

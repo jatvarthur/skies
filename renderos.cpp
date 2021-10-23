@@ -17,14 +17,34 @@ struct RenderContext {
 static RenderContext* pCtx = nullptr;
 
 static const COLORREF TERMINAL_COLORS[] = {
-	RGB(  1,   1,   1),
+	// dark shades
+	RGB(  1,  1,   1),
+	RGB(134,  30,  21),
+	RGB( 29,  90,  36),
+	RGB(130, 101,   0),
+	RGB(  0,  56,  94),
+	RGB( 57,  19,  54),
+	RGB( 13,  95, 125),
+	RGB(102, 102, 102),
+	// normal shades
+	RGB( 31,  31,  31),
 	RGB(222,  56,  43),
 	RGB( 57, 181,  74),
 	RGB(255, 199,   6),
 	RGB(  0, 111, 184),
 	RGB(118,  38, 113),
 	RGB( 44, 181, 233),
+	RGB(153, 153, 153),
+	// light shades
+	RGB( 61,  61,  61),
+	RGB(242, 172,  76),
+	RGB(139, 218, 149),
+	RGB(255, 228, 136),
+	RGB( 23, 163, 255),
+	RGB(175,  56, 167),
+	RGB(168, 225, 247),
 	RGB(204, 204, 204),
+	// bright shades
 	RGB(128, 128, 128),
 	RGB(255,   0,   0),
 	RGB(  0, 255,   0),

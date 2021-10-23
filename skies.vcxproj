@@ -141,7 +141,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ecs.h" />
     <ClInclude Include="engine.h" />
+    <ClInclude Include="keybrd.h" />
+    <ClInclude Include="keybrdos.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="renderos.h" />
@@ -152,8 +155,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp" />
+    <ClCompile Include="ecs.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="keybrdos.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="renderos.cpp" />
     <ClCompile Include="skii_image.cpp" />
