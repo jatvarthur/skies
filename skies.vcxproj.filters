@@ -19,6 +19,15 @@
     <Filter Include="Assets">
       <UniqueIdentifier>{1a41733b-eba6-4a3c-ad2d-52c6e714da6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{2d12d082-b3c9-4273-93ea-1d72c2c0e26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\Header Files">
+      <UniqueIdentifier>{1eda29d4-1e9d-4307-8793-2334ca5ffafc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\Source Files">
+      <UniqueIdentifier>{48fdea13-f5de-4ec6-8f94-3fc5e4bb6372}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="winos.h">
@@ -54,6 +63,9 @@
     <ClInclude Include="ecs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\Zeppelin.h">
+      <Filter>Scripts\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp">
@@ -78,6 +90,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ecs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\src\Zeppelin.cpp">
+      <Filter>Scripts\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

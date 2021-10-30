@@ -28,7 +28,13 @@ bool gameInit()
 	return true;
 }
 
-void gameStep(int delta)
+bool gameAwake()
+{
+	scriptSystemAwake(g_entityManager);
+	return true;
+}
+
+void gameStep(float delta)
 {	
 	if (keyIsPressed(KEY_F5)) {
 		gameInit();
@@ -61,7 +67,12 @@ void gameStep(int delta)
 	}
 }
 
+void gameShutdown()
+{
+	scriptSystemShutdown(g_entityManager);
+}
+
 void gameClean()
 {
-
+	scriptSystemCleanup(g_entityManager);
 }

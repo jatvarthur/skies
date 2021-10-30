@@ -1,12 +1,101 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 #include "render.h"
 #include "engine.h"
+
+
+typedef int Entity_t;
+const Entity_t E_UNDEF = 0;
+class EntityManager;
+
+// script subsystem
+class Script {
+protected:
+	Script(const Script& rhs) = delete;
+	Script& operator=(const Script& rhs) = delete;
+
+public:
+	Script(EntityManager& em, Entity_t id)
+		: em_(em), id_(id)
+	{}
+	virtual ~Script() {}
+
+	virtual void awake() {}
+	virtual void shutdown() {}
+	virtual void update(float delta) {}
+
+	virtual void load(std::istream& is) {}
+
+protected:
+	EntityManager& em_;
+	Entity_t id_;
+};
+
+using ScriptFactoryProc_t = Script* (*)(EntityManager& em, Entity_t id);
+
+class ScriptRegistry final {
+protected:
+	ScriptRegistry() {}
+
+public:
+	void registerFactory(const std::string& name, ScriptFactoryProc_t factoryProc);
+	Script* create(const std::string& name, EntityManager& em, Entity_t id) const;
+
+public:
+	static ScriptRegistry& get();
+
+private:
+	std::unordered_map<std::string, ScriptFactoryProc_t> registry_;
+};
+
+#define REGISTER_SCRIPT(name, scriptClass) \
+	static class name ## Factory {	\
+	public:							\
+		name ## Factory() { ScriptRegistry::get().registerFactory(#name, createScript); } \
+		static Script* createScript(EntityManager& em, Entity_t id) { return new scriptClass(em, id); }	\
+	} _ ## name ## Factory
+
+
+// shader subsystem
+struct Shader;
+
+using ShaderProc_t = void(*)(const Shader* shader, EntityManager& em);
+
+struct Shader {
+	ShaderProc_t shaderProc;
+	Entity_t entityId;
+	union {
+		struct { float p0, p1, p2, p3, p4; };
+		float p[5];
+	};
+};
+
+class ShaderRegistry final {
+protected:
+	ShaderRegistry() {}
+
+public:
+	void registerShader(const std::string& name, ShaderProc_t shaderProc);
+	ShaderProc_t getShader(const std::string& name) const;
+
+public:
+	static ShaderRegistry& get();
+
+private:
+	std::unordered_map<std::string, ShaderProc_t> registry_;
+};
+
+#define REGISTER_SHADER(name, shaderProc) \
+	static class name ## Registrar {	\
+	public:							\
+		name ## Registrar() { ShaderRegistry::get().registerShader(#name, shaderProc); } \
+	} _ ## name ## Registrar
 
 // Game Object + Components: is a restricted ECS approach
 struct PositionComponent {
 	int x, y;
-	int orientation;
+	float orientation;
 };
 
 struct PhysicsComponent {
@@ -24,18 +113,19 @@ struct RenderComponent {
 };
 
 struct ScriptComponent {
-	// pointer to script
+	Script* ps;
 };
 
-typedef int Entity_t;
-const Entity_t E_UNDEF = 0;
 
 class EntityManager final
 {
 private:
-	friend void renderSystem(const EntityManager& entityManager);
-	friend void scriptSystem(const EntityManager& entityManager, int delta);
-	friend void physicsSystem(const EntityManager& entityManager, int delta);
+	friend void renderSystem(EntityManager& entityManager);
+	friend void physicsSystem(EntityManager& entityManager, float delta);
+	friend void scriptSystem(EntityManager& entityManager, float delta);
+	friend void scriptSystemAwake(EntityManager& entityManager);
+	friend void scriptSystemShutdown(EntityManager& entityManager);
+	friend void scriptSystemCleanup(EntityManager& entityManager);
 
 	struct EntityData {
 		PositionComponent pos;
@@ -75,10 +165,18 @@ public:
 		return &entities_[id - 1].script;
 	}
 
+	Shader* addShader(Entity_t id);
+
 private:
+	// indexed by entityId
 	std::vector<EntityData> entities_;
+	// not by entityId
+	std::vector<Shader> shaders_;
 };
 
-void renderSystem(const EntityManager& entityManager);
-void scriptSystem(const EntityManager& entityManager, int delta);
-void physicsSystem(const EntityManager& entityManager, int delta);
+void renderSystem(EntityManager& entityManager);
+void physicsSystem(EntityManager& entityManager, float delta);
+void scriptSystem(EntityManager& entityManager, float delta);
+void scriptSystemAwake(EntityManager& entityManager);
+void scriptSystemShutdown(EntityManager& entityManager);
+void scriptSystemCleanup(EntityManager& entityManager);

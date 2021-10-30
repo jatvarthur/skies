@@ -2,6 +2,12 @@
 
 enum Key {
 	KEY_RETURN	= 0x0D,
+
+	KEY_LEFT	= 0x25,
+	KEY_UP,
+	KEY_RIGHT,
+	KEY_DOWN,
+
 	KEY_F1		= 0x70, 
 	KEY_F2,
 	KEY_F3,

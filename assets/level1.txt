@@ -5,5 +5,6 @@ level1
 1
 P 50 30 0
 Y 5000
-R @ 27 0
-S zeppelin 0
+R @ 27 0 1 zeppelinLight 2 30.0 7.0
+S zeppelin
+

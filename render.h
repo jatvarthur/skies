@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cassert>
 #include <iostream>
+#include <unordered_map>
+#include "engine.h"
 
 enum Color {
 	// dark shades
@@ -39,7 +41,8 @@ enum Color {
 	COLOR_BRIGHT_BLUE,				// 28
 	COLOR_BRIGHT_MAGENTA,
 	COLOR_BRIGHT_CYAN,
-	COLOR_BRIGHT_WHITE				// 31
+	COLOR_BRIGHT_WHITE,				// 31
+	N_COLORS
 };
 
 typedef uint8_t color_t;
@@ -101,7 +104,9 @@ private:
 	Symbol* buffer_;
 };
 
-
 int drawChar(int x, int y, char ch, color_t fg, color_t bg);
 int drawString(int x, int y, const char* s, color_t fg, color_t bg);
 int drawImage(int xDst, int yDst, int xSrx, int ySrc, int wSrc, int hSrc, const SkiiImage& image);
+
+Symbol getSymbol(int x, int y);
+int putAttrs(int x, int y, color_t fg, color_t bg);

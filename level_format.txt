@@ -7,5 +7,5 @@ EntityId
 -- Component_descs: P pos, Y phys, R render, S script
 P x y orientation
 Y mass
-R charcode fg bg
-S scriptName Number_params ...params
+R charcode fg bg 0 (no shader) / 1 (has shader) shaderName Number_of_params ...parms 
+S scriptName ...params

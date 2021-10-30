@@ -5,6 +5,8 @@
 #include "keybrdos.h"
 
 
+const float DELTA_STEP = 1.0f / 30.0f;
+
 #define MAX_LOADSTRING 100
 
 HINSTANCE g_hInstance;
@@ -22,27 +24,32 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
+    LARGE_INTEGER counterFreq;
+    int fpsCounter = 0;
+    int64_t fpsDelta = 0;
+    LARGE_INTEGER frameStart, frameEnd;
+    float delta = DELTA_STEP;
+
     g_hInstance = hInstance;
+    int exitCode = EXIT_FAILURE;
 
     if (!gameInit()) {
-        return FALSE;
+        goto exitAfterGame;
     }
 
     if (!createWindow (hInstance, nCmdShow)) {
-        return FALSE;
+        goto exitAfterGame;
     }
 
     if (!renderInit(g_hWnd, g_windowWidth, g_windowHeight)) {
-        return FALSE;
+        goto exitAfterGame;
     }
 
-    LARGE_INTEGER counterFreq;
+    if (!gameAwake()) {
+        goto exitAfterRender;
+    }
+    
     QueryPerformanceFrequency(&counterFreq);
-
-    int fpsCounter = 0;
-    int64_t fpsDelta = 0;
-
-    LARGE_INTEGER frameStart, frameEnd;
     QueryPerformanceCounter(&frameStart);
 
     while (processMessages()) {
@@ -50,12 +57,18 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
             WaitMessage();
         } else {
             keyBeforeFrame();
-            // todo: delta
-            gameStep(0);
+            //if (delta >= DELTA_STEP) {
+                gameStep(delta);
+            //    delta = 0.0f;
+            //}
             render();
             QueryPerformanceCounter(&frameEnd);
 
             int64_t tickDelta = frameEnd.QuadPart - frameStart.QuadPart;
+            //delta += tickDelta;
+            delta = (float)tickDelta;
+            if (delta > DELTA_STEP * 10) delta = DELTA_STEP;
+
             fpsCounter += 1;
             fpsDelta += tickDelta;
             if (fpsDelta > counterFreq.QuadPart) {
@@ -68,11 +81,15 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
             keyAfterFrame();
         }
     }
+    gameShutdown();
+    exitCode = EXIT_SUCCESS;
 
-    gameClean();
+exitAfterRender:
     renderClean();
+exitAfterGame:
+    gameClean();
 
-    return 0;
+    return exitCode;
 }
 
 BOOL createWindow(HINSTANCE hInstance, int nCmdShow)

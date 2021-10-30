@@ -26,7 +26,7 @@ static const COLORREF TERMINAL_COLORS[] = {
 	RGB(  0,  56,  94),
 	RGB( 57,  19,  54),
 	RGB( 13,  95, 125),
-	RGB(102, 102, 102),
+	RGB(162, 162, 162),
 	// normal shades
 	RGB( 31,  31,  31),
 	RGB(222,  56,  43),
@@ -35,7 +35,7 @@ static const COLORREF TERMINAL_COLORS[] = {
 	RGB(  0, 111, 184),
 	RGB(118,  38, 113),
 	RGB( 44, 181, 233),
-	RGB(153, 153, 153),
+	RGB(193, 193, 193),
 	// light shades
 	RGB( 61,  61,  61),
 	RGB(242, 172,  76),
@@ -44,7 +44,7 @@ static const COLORREF TERMINAL_COLORS[] = {
 	RGB( 23, 163, 255),
 	RGB(175,  56, 167),
 	RGB(168, 225, 247),
-	RGB(204, 204, 204),
+	RGB(224, 224, 224),
 	// bright shades
 	RGB(128, 128, 128),
 	RGB(255,   0,   0),
@@ -56,7 +56,6 @@ static const COLORREF TERMINAL_COLORS[] = {
 	RGB(255, 255, 255)
 };
 
-#define NELEMS(a) (sizeof(a) / sizeof(a[0]))
 
 int drawChar(int x, int y, char ch, color_t fg, color_t bg)
 {
@@ -110,6 +109,27 @@ int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const 
 	}
 
 	return 1;
+}
+
+Symbol getSymbol(int x, int y)
+{
+	assert(pCtx != nullptr);
+	assert(x >= 0 && x < pCtx->width);
+	assert(y >= 0 && y < pCtx->height);
+
+	return pCtx->screenBuffer[y * pCtx->width + x];
+}
+
+int putAttrs(int x, int y, color_t fg, color_t bg)
+{
+	assert(pCtx != nullptr);
+	assert(x >= 0 && x < pCtx->width);
+	assert(y >= 0 && y < pCtx->height);
+
+	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
+	p->fg = fg;
+	p->bg = bg;
+	return 0;
 }
 
 

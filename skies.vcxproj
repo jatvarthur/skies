@@ -148,6 +148,7 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="renderos.h" />
+    <ClInclude Include="scripts\Zeppelin.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="winos.h" />
     <ClInclude Include="resource.h" />
@@ -161,6 +162,8 @@
     <ClCompile Include="keybrdos.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="renderos.cpp" />
+    <ClCompile Include="scripts\src\Zeppelin.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="skii_image.cpp" />
   </ItemGroup>
   <ItemGroup>
