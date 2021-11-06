@@ -1,6 +1,10 @@
 Width Height
 Tilemap_name(without ext)
 
+Phys_B Phys_MAX_L_SPEED Phys_MAX_A_SPEED
+Camera_Entity_id
+
+
 Number_of_objects
 -- Object_desc:
 EntityId

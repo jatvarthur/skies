@@ -49,12 +49,12 @@ private:
 	std::unordered_map<std::string, ScriptFactoryProc_t> registry_;
 };
 
-#define REGISTER_SCRIPT(name, scriptClass) \
-	static class name ## Factory {	\
+#define REGISTER_SCRIPT(scriptClass) \
+	static class scriptClass ## Factory {	\
 	public:							\
-		name ## Factory() { ScriptRegistry::get().registerFactory(#name, createScript); } \
+		scriptClass ## Factory() { ScriptRegistry::get().registerFactory(#scriptClass, createScript); } \
 		static Script* createScript(EntityManager& em, Entity_t id) { return new scriptClass(em, id); }	\
-	} _ ## name ## Factory
+	} s_ ## scriptClass ## Factory
 
 
 // shader subsystem
@@ -86,23 +86,33 @@ private:
 	std::unordered_map<std::string, ShaderProc_t> registry_;
 };
 
-#define REGISTER_SHADER(name, shaderProc) \
-	static class name ## Registrar {	\
+#define REGISTER_SHADER(shaderProc) \
+	static class shaderProc ## Registrar {	\
 	public:							\
-		name ## Registrar() { ShaderRegistry::get().registerShader(#name, shaderProc); } \
-	} _ ## name ## Registrar
+		shaderProc ## Registrar() { ShaderRegistry::get().registerShader(#shaderProc, shaderProc); } \
+	} s_ ## shaderProc ## Registrar
+
+
+// physics subsystem
+struct PhysicsConsts {
+	float B;				// based on Stokes coeff 6*PI*ETA*r
+	float maxLinearSpeed;	// in tiles
+	float maxAngularSpeed;	// in radians
+};
+
 
 // Game Object + Components: is a restricted ECS approach
 struct PositionComponent {
-	int x, y;
-	float orientation;
+	float x, y;
+	float theta;	// orientation
 };
 
 struct PhysicsComponent {
-	float m;		// mass
-	vec2f force;
-	vec2f velocity;
-	float phi;		// angular speed
+	int m;			// mass, 0 for static
+	float thrust;   // provided by user
+	float torque;
+	float linearSpeed;
+	float angularSpeed;
 };
 
 struct RenderComponent {

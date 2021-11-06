@@ -108,5 +108,8 @@ int drawChar(int x, int y, char ch, color_t fg, color_t bg);
 int drawString(int x, int y, const char* s, color_t fg, color_t bg);
 int drawImage(int xDst, int yDst, int xSrx, int ySrc, int wSrc, int hSrc, const SkiiImage& image);
 
-Symbol getSymbol(int x, int y);
+int getSymbol(int x, int y, Symbol* sym);
 int putAttrs(int x, int y, color_t fg, color_t bg);
+
+void drawTranslate(int x, int y);
+

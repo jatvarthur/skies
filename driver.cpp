@@ -56,17 +56,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
         if (IsIconic(g_hWnd)) {
             WaitMessage();
         } else {
-            keyBeforeFrame();
-            //if (delta >= DELTA_STEP) {
+            if (delta >= DELTA_STEP) {
+                keyBeforeFrame();
                 gameStep(delta);
-            //    delta = 0.0f;
-            //}
+                delta = 0.0f;
+                keyAfterFrame();
+            }
             render();
             QueryPerformanceCounter(&frameEnd);
 
             int64_t tickDelta = frameEnd.QuadPart - frameStart.QuadPart;
-            //delta += tickDelta;
-            delta = (float)tickDelta;
+            delta += tickDelta;
             if (delta > DELTA_STEP * 10) delta = DELTA_STEP;
 
             fpsCounter += 1;
@@ -77,8 +77,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
                 fpsDelta = 0;
             }
             frameStart = frameEnd;
-
-            keyAfterFrame();
         }
     }
     gameShutdown();

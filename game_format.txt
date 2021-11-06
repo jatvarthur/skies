@@ -1,2 +1,3 @@
 Window_Width Window_Height
 Level_file_name
+Camera_WCenter_X Camera_WCenter_Y

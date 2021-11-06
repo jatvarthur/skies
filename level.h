@@ -5,6 +5,37 @@
 #include "render.h"
 #include "ecs.h"
 
+
+class FixedCamera {
+public:
+	FixedCamera(EntityManager& em)
+		: em_(em) 
+	{}
+
+	void setCenter(vec2i value)
+	{
+		wCenter_ = value;
+	}
+
+	void setEntity(Entity_t value)
+	{
+		id_ = value;
+	}
+
+	vec2i translation() const
+	{
+		assert(id_ != E_UNDEF);
+		
+		PositionComponent *pos = em_.getPositionComponent(id_);
+		return vec2i(wCenter_.x - pos->x, wCenter_.y - pos->y);
+	}
+
+private:
+	vec2i wCenter_;
+	Entity_t id_;
+	EntityManager& em_;
+};
+
 struct LevelDesc {
 	int width;
 	int height;

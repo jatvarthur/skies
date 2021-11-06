@@ -13,6 +13,8 @@ struct RenderContext {
 	int width;
 	int height;
 	Symbol* screenBuffer;
+	int tx;
+	int ty;
 };
 
 static RenderContext* pCtx = nullptr;
@@ -60,8 +62,12 @@ static const COLORREF TERMINAL_COLORS[] = {
 int drawChar(int x, int y, char ch, color_t fg, color_t bg)
 {
 	assert(pCtx != nullptr);
-	assert(x >= 0 && x < pCtx->width);
-	assert(y >= 0 && y < pCtx->height);
+
+	x += pCtx->tx;
+	y += pCtx->ty;
+	if (x < 0 || x >= pCtx->width || y < 0 || y >= pCtx->height) {
+		return 0;
+	}
 
 	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
 	p->ch = ch;
@@ -74,9 +80,14 @@ int drawChar(int x, int y, char ch, color_t fg, color_t bg)
 int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 {
 	assert(pCtx != nullptr);
-	assert(x >= 0 && x < pCtx->width);
-	assert(y >= 0 && y < pCtx->height);
 	assert(s != nullptr);
+
+	x += pCtx->tx;
+	y += pCtx->ty;
+	// todo: translation, draw part
+	if (x < 0 || x >= pCtx->width || y < 0 || y >= pCtx->height) {
+		return 0;
+	}
 
 	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
 	for ( ; *s != '\0' && x < pCtx->width; ++p, ++s, ++x) {
@@ -92,6 +103,8 @@ int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const 
 {
 	assert(pCtx != nullptr);
 	assert(image.isValid());
+// todo: translation
+
 	assert(xDst >= 0 && xDst < pCtx->width);
 	assert(yDst >= 0 && yDst < pCtx->height);
 	assert(xSrc >= 0);
@@ -111,25 +124,42 @@ int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const 
 	return 1;
 }
 
-Symbol getSymbol(int x, int y)
+int getSymbol(int x, int y, Symbol* sym)
 {
 	assert(pCtx != nullptr);
-	assert(x >= 0 && x < pCtx->width);
-	assert(y >= 0 && y < pCtx->height);
+	assert(sym != nullptr);
 
-	return pCtx->screenBuffer[y * pCtx->width + x];
+	x += pCtx->tx;
+	y += pCtx->ty;
+	if (x < 0 || x >= pCtx->width || y < 0 || y >= pCtx->height) {
+		return 0;
+	}
+
+	*sym = pCtx->screenBuffer[y * pCtx->width + x];
+	return 1;
 }
 
 int putAttrs(int x, int y, color_t fg, color_t bg)
 {
 	assert(pCtx != nullptr);
-	assert(x >= 0 && x < pCtx->width);
-	assert(y >= 0 && y < pCtx->height);
+	
+	x += pCtx->tx;
+	y += pCtx->ty;
+	if (x < 0 || x >= pCtx->width || y < 0 || y >= pCtx->height) {
+		return 0;
+	}
 
 	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
 	p->fg = fg;
 	p->bg = bg;
-	return 0;
+	return 1;
+}
+
+void drawTranslate(int x, int y)
+{
+	assert(pCtx != nullptr);
+	pCtx->tx = x;
+	pCtx->ty = y;
 }
 
 
@@ -180,6 +210,9 @@ bool renderInit(HWND hWnd, int width, int height)
 		pCtx->screenBuffer[i].fg = COLOR_WHITE;
 		pCtx->screenBuffer[i].ch = ' ';
 	}
+
+	pCtx->tx = 0;
+	pCtx->ty = 0;
 
 	return true;
 }

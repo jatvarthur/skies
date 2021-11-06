@@ -36,6 +36,15 @@ void Registry<ID, T>::put(ID id, const T& item)
 */
 
 const float PI = 3.1415926f;
+const float EPS = 0.0001f;
+
+struct vec2i {
+	int x, y;
+
+	vec2i() : x(0), y(0) {}
+	vec2i(int ax, int ay) : x(ax), y(ay) {}
+
+};
 
 struct vec2f {
 	float x, y;
@@ -55,12 +64,25 @@ struct vec2f {
 	}
 };
 
-float dot(vec2f lhs, vec2f rhs);
-vec2f operator*(vec2f lhs, float rhs);
-vec2f operator*(float lhs, vec2f rhs);
-vec2f operator/(vec2f lhs, float rhs);
+inline float dot(vec2f lhs, vec2f rhs)
+{
+	return lhs.x * rhs.x + lhs.y * rhs.y;
+}
 
+inline vec2f operator*(vec2f lhs, float rhs)
+{
+	return vec2f(lhs.x * rhs, lhs.y * rhs);
+}
 
+inline vec2f operator*(float lhs, vec2f rhs)
+{
+	return vec2f(lhs * rhs.x, lhs * rhs.y);
+}
+
+inline vec2f operator/(vec2f lhs, float rhs)
+{
+	return vec2f(lhs.x / rhs, lhs.y / rhs);
+}
 
 
 std::string getTextAssetFileName(const std::string& name);

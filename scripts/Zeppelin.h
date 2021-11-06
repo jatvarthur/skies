@@ -8,9 +8,12 @@ public:
 	{}
 
 	void update(float delta) override;
+	void load(std::istream& is) override;
+
 
 private:
-
+	float m_torque_;
+	float m_thrust_;
 };
 
-void zeppelinLightShader(const Shader* shader, EntityManager &em);
+void shdZeppelinLight(const Shader* shader, EntityManager &em);

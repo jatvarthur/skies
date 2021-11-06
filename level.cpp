@@ -5,24 +5,25 @@
 #include "ecs.h"
 
 
+extern PhysicsConsts g_physConsts;
+extern FixedCamera g_camera;
+
 bool readPosition(std::istream& fin, Entity_t id, EntityManager& entityManager)
 {
 	PositionComponent* c = entityManager.getPositionComponent(id);
 
 	float o;
 	fin >> c->x >> c->y >> o;
-	c->orientation = o * PI / 180.0f;
+	c->theta = o * PI / 180.0f;
 	return fin.good();
 }
 
 bool readPhysics(std::istream& fin, Entity_t id, EntityManager& entityManager)
 {
 	PhysicsComponent* c = entityManager.getPhysicsComponent(id);
+	memset(c, 0, sizeof(*c));
 
 	fin >> c->m;
-	c->force = vec2f();
-	c->velocity = vec2f();
-	c->phi = 0.0f;
 	return fin.good();
 }
 
@@ -118,6 +119,12 @@ bool loadLevel(const std::string& name, LevelDesc& levelDesc, EntityManager& ent
 	levelDesc.width = w;
 	levelDesc.height = h;
 	levelDesc.tilemap = tilemap;
+
+	levelFile >> g_physConsts.B >> g_physConsts.maxLinearSpeed >> g_physConsts.maxAngularSpeed;
+	
+	Entity_t playerId;
+	levelFile >> playerId;
+	g_camera.setEntity(playerId);
 
 	int nObjects;
 	levelFile >> nObjects;
