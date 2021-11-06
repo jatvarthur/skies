@@ -55,34 +55,17 @@ void gameStep(float delta)
 	physicsSystem(g_entityManager, delta);
 
 	// "Logical" rendering
-	// 1. tilemap, first layer
-
 	vec2i t = g_camera.translation();
-	int xDst = 0, yDst = 0;
-	int xSrc = 0, ySrc = 0;
-	int wSrc = 0, hSrc = 0;
-	if (t.x < 0) {
-		xSrc = -t.x;
-		wSrc = std::min(g_level.tilemap.width() + xSrc, g_windowWidth);
-	} else {
-		xDst = t.x;
-		wSrc = std::min(g_level.tilemap.width(), g_windowWidth - xDst);
-	}
-	if (t.y < 0) {
-		ySrc = -t.y;
-		hSrc = std::min(g_level.tilemap.height() + ySrc, g_windowHeight);
-	} else {
-		yDst = t.y;
-		hSrc = std::min(g_level.tilemap.height(), g_windowHeight - yDst);
-	}
+	drawTranslate(t.x, t.y);
 
-	drawImage(xDst, yDst, xSrc, ySrc, wSrc, hSrc, g_level.tilemap);
+	// 1. tilemap, first layer
+	drawImage(0, 0, 0, 0, g_level.tilemap.width(), g_level.tilemap.height(), g_level.tilemap);
 
 	// 2. game objects, second layer
-	drawTranslate(t.x, t.y);
 	renderSystem(g_entityManager);
 
 	// 3. UI, third layer
+	drawTranslate(0, 0);
 	// todo:
 
 	int y = 62, x = 3;

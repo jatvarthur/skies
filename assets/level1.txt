@@ -1,6 +1,6 @@
 240 160
 level1
-25.0 10.0 0.025
+25.0 10.0 0.0025
 1
 
 1
@@ -8,5 +8,5 @@ level1
 P 50 30 0
 Y 500
 R @ 27 0 1 shdZeppelinLight 2 30.0 7.0
-S ZeppelinScript 200.0 2.0
+S ZeppelinScript 200.0 0.5
 

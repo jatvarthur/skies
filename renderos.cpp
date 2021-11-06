@@ -84,13 +84,23 @@ int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 
 	x += pCtx->tx;
 	y += pCtx->ty;
-	// todo: translation, draw part
-	if (x < 0 || x >= pCtx->width || y < 0 || y >= pCtx->height) {
+	if (y < 0 || y >= pCtx->height) {
 		return 0;
 	}
 
+	int len = strlen(s);
+	if (x < 0) {
+		s -= x;
+		len += x;
+		x = 0;
+	}
+	if (x + len > pCtx->width) {
+		len = pCtx->width - x;
+	}
+	if (len <= 0) return 0;
+
 	Symbol* p = &pCtx->screenBuffer[y * pCtx->width + x];
-	for ( ; *s != '\0' && x < pCtx->width; ++p, ++s, ++x) {
+	for ( ; len > 0; ++p, ++s, ++x, --len) {
 		p->ch = *s;
 		p->fg = fg;
 		p->bg = bg;
@@ -103,7 +113,28 @@ int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const 
 {
 	assert(pCtx != nullptr);
 	assert(image.isValid());
-// todo: translation
+
+	xDst += pCtx->tx;
+	if (xDst < 0) {
+		xSrc -= xDst;
+		wSrc += xDst;
+		xDst = 0;
+	}	
+	if (xDst + wSrc > pCtx->width) {
+		wSrc = pCtx->width - xDst;
+	}
+	if (wSrc <= 0) return 0;
+
+	yDst += pCtx->ty;
+	if (yDst < 0) {
+		ySrc -= yDst;
+		hSrc += yDst;
+		yDst = 0;
+	}	
+	if (yDst + hSrc > pCtx->height) {
+		hSrc = pCtx->height - yDst;
+	}
+	if (hSrc <= 0) return 0;
 
 	assert(xDst >= 0 && xDst < pCtx->width);
 	assert(yDst >= 0 && yDst < pCtx->height);
@@ -112,11 +143,9 @@ int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const 
 	assert(wSrc > 0 && xSrc + wSrc <= image.width());
 	assert(hSrc > 0 && ySrc + hSrc <= image.height());
 
-	int hOut = min(pCtx->height - yDst, hSrc);
-	int wOut = min(pCtx->width - xDst, wSrc);
-	for (int j = 0; j < hOut; ++j) {
+	for (int j = 0; j < hSrc; ++j) {
 		Symbol* pdest = &pCtx->screenBuffer[(yDst + j) * pCtx->width + xDst];
-		for (int i = xSrc; i < xSrc + wOut; ++i, ++pdest) {
+		for (int i = xSrc; i < xSrc + wSrc; ++i, ++pdest) {
 			*pdest = image.at(i, ySrc + j);
 		}
 	}
