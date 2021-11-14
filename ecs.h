@@ -7,6 +7,7 @@
 
 typedef int Entity_t;
 const Entity_t E_UNDEF = 0;
+const Entity_t E_STATIC = -1;
 class EntityManager;
 
 // script subsystem
@@ -24,6 +25,7 @@ public:
 	virtual void awake() {}
 	virtual void shutdown() {}
 	virtual void update(float delta) {}
+	virtual void onCollision(int x, int y, Entity_t source, Entity_t hit) {}
 
 	virtual void load(std::istream& is) {}
 
@@ -95,7 +97,6 @@ private:
 
 // physics subsystem
 struct PhysicsConsts {
-	float B;				// based on Stokes coeff 6*PI*ETA*r
 	float maxLinearSpeed;	// in tiles
 	float maxAngularSpeed;	// in radians
 };
@@ -109,6 +110,7 @@ struct PositionComponent {
 
 struct PhysicsComponent {
 	int m;			// mass, 0 for static
+	float drag;		// based on Stokes coeff 6*PI*ETA*r
 	float thrust;   // provided by user
 	float torque;
 	float linearSpeed;
@@ -130,14 +132,17 @@ struct ScriptComponent {
 class EntityManager final
 {
 private:
+	// todo: refactor friends to iterator forEachEntity(Callback)
 	friend void renderSystem(EntityManager& entityManager);
 	friend void physicsSystem(EntityManager& entityManager, float delta);
 	friend void scriptSystem(EntityManager& entityManager, float delta);
 	friend void scriptSystemAwake(EntityManager& entityManager);
 	friend void scriptSystemShutdown(EntityManager& entityManager);
 	friend void scriptSystemCleanup(EntityManager& entityManager);
+	friend Entity_t checkCollision(EntityManager& entityManager, Entity_t id, int x, int y);
 
 	struct EntityData {
+		Entity_t id;
 		PositionComponent pos;
 		PhysicsComponent phys;
 		RenderComponent view;

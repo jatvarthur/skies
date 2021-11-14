@@ -1,8 +1,12 @@
 Width Height
 Tilemap_name(without ext)
 
-Phys_B Phys_MAX_L_SPEED Phys_MAX_A_SPEED
+Phys_MAX_L_SPEED Phys_MAX_A_SPEED
+-- Collider_desc:
+Number_of_collider_chars ...Collider_chars
+
 Camera_Entity_id
+
 
 
 Number_of_objects
@@ -10,6 +14,6 @@ Number_of_objects
 EntityId
 -- Component_descs: P pos, Y phys, R render, S script
 P x y orientation
-Y mass
+Y mass drag
 R charcode fg bg 0 (no shader) / 1 (has shader) shaderName Number_of_params ...parms 
 S scriptName ...params

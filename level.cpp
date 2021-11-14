@@ -12,8 +12,11 @@ bool readPosition(std::istream& fin, Entity_t id, EntityManager& entityManager)
 {
 	PositionComponent* c = entityManager.getPositionComponent(id);
 
+	int x, y;
 	float o;
-	fin >> c->x >> c->y >> o;
+	fin >> x >> y >> o;
+	c->x = (float)x + 0.5f;
+	c->y = (float)y + 0.5f;
 	c->theta = o * PI / 180.0f;
 	return fin.good();
 }
@@ -23,7 +26,7 @@ bool readPhysics(std::istream& fin, Entity_t id, EntityManager& entityManager)
 	PhysicsComponent* c = entityManager.getPhysicsComponent(id);
 	memset(c, 0, sizeof(*c));
 
-	fin >> c->m;
+	fin >> c->m >> c->drag;
 	return fin.good();
 }
 
@@ -120,8 +123,15 @@ bool loadLevel(const std::string& name, LevelDesc& levelDesc, EntityManager& ent
 	levelDesc.height = h;
 	levelDesc.tilemap = tilemap;
 
-	levelFile >> g_physConsts.B >> g_physConsts.maxLinearSpeed >> g_physConsts.maxAngularSpeed;
+	levelFile >> g_physConsts.maxLinearSpeed >> g_physConsts.maxAngularSpeed;
 	
+	int colliderCharsNo;
+	levelFile >> colliderCharsNo;
+	levelDesc.colliderChars.resize(colliderCharsNo);
+	for (int i = 0; i < colliderCharsNo; ++i) {
+		levelFile >> levelDesc.colliderChars[i];
+	}
+
 	Entity_t playerId;
 	levelFile >> playerId;
 	g_camera.setEntity(playerId);

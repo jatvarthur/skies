@@ -84,6 +84,7 @@ inline vec2f operator/(vec2f lhs, float rhs)
 	return vec2f(lhs.x / rhs, lhs.y / rhs);
 }
 
+void _debug(const wchar_t* fmt, ...);
 
 std::string getTextAssetFileName(const std::string& name);
 std::string getMapAssetFileName(const std::string& name);

@@ -59,6 +59,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
             if (delta >= DELTA_STEP) {
                 keyBeforeFrame();
                 gameStep(delta);
+                
+                //wchar_t s[255];
+                //swprintf_s(s, L"delta = %0.4f\n", delta);
+                //OutputDebugString(s);
+                
                 delta = 0.0f;
                 keyAfterFrame();
             }

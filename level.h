@@ -27,7 +27,13 @@ public:
 		assert(id_ != E_UNDEF);
 		
 		PositionComponent *pos = em_.getPositionComponent(id_);
-		return vec2i(wCenter_.x - pos->x, wCenter_.y - pos->y);
+		return vec2i(wCenter_.x - (int)pos->x, wCenter_.y - (int)pos->y);
+	}
+
+	void apply()
+	{
+		vec2i t = translation();
+		drawTranslate(t.x, t.y);
 	}
 
 private:
@@ -40,7 +46,7 @@ struct LevelDesc {
 	int width;
 	int height;
 	SkiiImage tilemap;
-
+	std::vector<char> colliderChars;
 
 	// todo: ?
 	LevelDesc()

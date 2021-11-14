@@ -3,29 +3,6 @@
 #include "ecs.h"
 
 
-extern PhysicsConsts g_physConsts;
-
-void updateEntityPhysics(PositionComponent& pos, PhysicsComponent& phys, float delta)
-{
-	if (phys.m == 0) return;
-
-	float ldrag = g_physConsts.B * phys.linearSpeed;
-	float la = (phys.thrust - ldrag) / phys.m;
-	phys.linearSpeed = std::min(phys.linearSpeed + la * delta, g_physConsts.maxLinearSpeed);
-	pos.x += phys.linearSpeed * cosf(pos.theta) * delta;
-	pos.y += phys.linearSpeed * sinf(pos.theta) * delta;
-
-	float adrag = g_physConsts.B * phys.angularSpeed;
-	float aa = (phys.torque - adrag) / phys.m;
-	phys.angularSpeed = std::min(phys.angularSpeed + aa * delta,g_physConsts.maxAngularSpeed);
-	pos.theta += phys.angularSpeed;
-	if (pos.theta < 0.0f) {
-		pos.theta = 2 * PI + pos.theta;
-	} else if (pos.theta > 2 * PI) {
-		pos.theta = pos.theta - 2 * PI;
-	}
-}
-
 ScriptRegistry& ScriptRegistry::get()
 {
 	static ScriptRegistry instance;
@@ -53,6 +30,7 @@ void EntityManager::addEntity(Entity_t id)
 	int index = id - 1;
 	if (index < (int)entities_.size()) return;
 	entities_.resize(id);
+	entities_[id - 1].id = id;
 }
 
 void EntityManager::clear()
@@ -78,13 +56,6 @@ void renderSystem(EntityManager& entityManager)
 
 	for (Shader& s : entityManager.shaders_) {
 		s.shaderProc(&s, entityManager);
-	}
-}
-
-void physicsSystem(EntityManager& entityManager, float delta)
-{
-	for (EntityManager::EntityData& d : entityManager.entities_) {
-		updateEntityPhysics(d.pos, d.phys, delta);
 	}
 }
 

@@ -1,0 +1,11 @@
+Number_of_windows
+-- Window_desc:
+Id: string
+X Y Width Height
+Number_of_controls
+-- Control_desc:
+L (label) Id X Y Number_of_strings
+str1
+str2
+...
+I (image) Id X Y File_name

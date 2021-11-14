@@ -7,8 +7,8 @@ public:
 		: Script(em, id)
 	{}
 
-	void update(float delta) override;
-	void load(std::istream& is) override;
+	virtual void update(float delta) override;
+	virtual void load(std::istream& is) override;
 
 
 private:

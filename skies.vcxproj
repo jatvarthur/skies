@@ -148,8 +148,10 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="renderos.h" />
+    <ClInclude Include="scripts\TradePost.h" />
     <ClInclude Include="scripts\Zeppelin.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ui.h" />
     <ClInclude Include="winos.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="game.h" />
@@ -157,14 +159,17 @@
   <ItemGroup>
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="ecs.cpp" />
-    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="engineos.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="keybrdos.cpp" />
     <ClCompile Include="level.cpp" />
+    <ClCompile Include="physics.cpp" />
     <ClCompile Include="renderos.cpp" />
+    <ClCompile Include="scripts\src\TradePost.cpp" />
     <ClCompile Include="scripts\src\Zeppelin.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="skii_image.cpp" />
+    <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="skies.rc" />
@@ -177,9 +182,11 @@
     <Text Include="assets\game.txt" />
     <Text Include="assets\level1.map.skii.txt" />
     <Text Include="assets\level1.txt" />
+    <Text Include="assets\level1.ui.txt" />
     <Text Include="game_format.txt" />
     <Text Include="level_format.txt" />
     <Text Include="skii_format.txt" />
+    <Text Include="ui_format.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,12 +6,14 @@
 #include "keybrd.h"
 #include "level.h"
 #include "ecs.h"
+#include "ui.h"
 
 
 int g_windowWidth = 0;
 int g_windowHeight = 0;
 LevelDesc g_level;
 EntityManager g_entityManager;
+UiManager g_uiManager;
 PhysicsConsts g_physConsts;
 FixedCamera g_camera(g_entityManager);
 
@@ -32,6 +34,9 @@ bool gameInit()
 	int x, y;
 	gameFile >> x >> y;
 	g_camera.setCenter(vec2i(x, y));
+
+	std::ifstream uiFile(getTextAssetFileName("level1.ui"));
+	g_uiManager.load(uiFile);
 
 	return true;
 }
@@ -55,8 +60,7 @@ void gameStep(float delta)
 	physicsSystem(g_entityManager, delta);
 
 	// "Logical" rendering
-	vec2i t = g_camera.translation();
-	drawTranslate(t.x, t.y);
+	g_camera.apply();
 
 	// 1. tilemap, first layer
 	drawImage(0, 0, 0, 0, g_level.tilemap.width(), g_level.tilemap.height(), g_level.tilemap);

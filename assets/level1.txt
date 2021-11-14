@@ -1,12 +1,18 @@
 240 160
 level1
-25.0 10.0 0.0025
+8.0 0.0025
+1 #
 1
 
+2
 1
-1
-P 50 30 0
-Y 500
+P 90 60 0
+Y 500 80.0
 R @ 27 0 1 shdZeppelinLight 2 30.0 7.0
-S ZeppelinScript 200.0 0.5
+S ZeppelinScript 150.0 0.5
 
+2
+P 108 48 0
+Y 0 0.0
+R T 27 3 0
+S TradePostScript 10

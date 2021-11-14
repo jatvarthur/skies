@@ -66,6 +66,12 @@
     <ClInclude Include="scripts\Zeppelin.h">
       <Filter>Scripts\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\TradePost.h">
+      <Filter>Scripts\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp">
@@ -80,7 +86,7 @@
     <ClCompile Include="level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
+    <ClCompile Include="engineos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="skii_image.cpp">
@@ -96,6 +102,15 @@
       <Filter>Scripts\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="physics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\src\TradePost.cpp">
+      <Filter>Scripts\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,6 +144,12 @@
       <Filter>Assets</Filter>
     </Text>
     <Text Include="assets\level1.txt">
+      <Filter>Assets</Filter>
+    </Text>
+    <Text Include="ui_format.txt">
+      <Filter>Formats</Filter>
+    </Text>
+    <Text Include="assets\level1.ui.txt">
       <Filter>Assets</Filter>
     </Text>
   </ItemGroup>

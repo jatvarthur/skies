@@ -1,0 +1,7 @@
+1
+
+trade_post 0 0 30 20
+1
+L label1 2 2 2
+Hello, stranger!
+You stand amidst crowded area...
