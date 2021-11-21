@@ -6,6 +6,7 @@
 #include "engine.h"
 
 enum Color {
+	COLOR_NONE = 0,
 	// dark shades
 	COLOR_BLACK = 0,				// 0
 	COLOR_DARK_RED,
@@ -107,9 +108,11 @@ private:
 int drawChar(int x, int y, char ch, color_t fg, color_t bg);
 int drawString(int x, int y, const char* s, color_t fg, color_t bg);
 int drawImage(int xDst, int yDst, int xSrx, int ySrc, int wSrc, int hSrc, const SkiiImage& image);
+int drawLine(int x, int y, int w, char cleft, char cfill, char cright, color_t fg, color_t bg);
 
 int getSymbol(int x, int y, Symbol* sym);
 int putAttrs(int x, int y, color_t fg, color_t bg);
 
+void drawIdentity();
 void drawTranslate(int x, int y);
 

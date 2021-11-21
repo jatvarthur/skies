@@ -41,13 +41,13 @@ bool readRender(std::istream& fin, Entity_t id, EntityManager& entityManager)
 
 	if (hasShader) {
 		std::string shaderName;
-		int paramsNo;
-		fin >> shaderName >> paramsNo;
+		int nParams;
+		fin >> shaderName >> nParams;
 		Shader* shader = entityManager.addShader(id);
-		assert(paramsNo <= NELEMS(shader->p));
+		assert(nParams <= NELEMS(shader->p));
 
 		shader->shaderProc = ShaderRegistry::get().getShader(shaderName);
-		for (int i = 0; i < paramsNo; ++i) {
+		for (int i = 0; i < nParams; ++i) {
 			fin >> shader->p[i];
 		}
 	}
@@ -125,10 +125,10 @@ bool loadLevel(const std::string& name, LevelDesc& levelDesc, EntityManager& ent
 
 	levelFile >> g_physConsts.maxLinearSpeed >> g_physConsts.maxAngularSpeed;
 	
-	int colliderCharsNo;
-	levelFile >> colliderCharsNo;
-	levelDesc.colliderChars.resize(colliderCharsNo);
-	for (int i = 0; i < colliderCharsNo; ++i) {
+	int nColliderChars;
+	levelFile >> nColliderChars;
+	levelDesc.colliderChars.resize(nColliderChars);
+	for (int i = 0; i < nColliderChars; ++i) {
 		levelFile >> levelDesc.colliderChars[i];
 	}
 

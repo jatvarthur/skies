@@ -86,5 +86,11 @@ inline vec2f operator/(vec2f lhs, float rhs)
 
 void _debug(const wchar_t* fmt, ...);
 
+static inline void ltrim(std::string& s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+		return !std::isspace(ch);
+	}));
+}
+
 std::string getTextAssetFileName(const std::string& name);
 std::string getMapAssetFileName(const std::string& name);

@@ -183,6 +183,7 @@
     <Text Include="assets\level1.map.skii.txt" />
     <Text Include="assets\level1.txt" />
     <Text Include="assets\level1.ui.txt" />
+    <Text Include="assets\london.skii.txt" />
     <Text Include="game_format.txt" />
     <Text Include="level_format.txt" />
     <Text Include="skii_format.txt" />

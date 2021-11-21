@@ -1,5 +1,5 @@
 "skii" Version
-Width Height Numer_color_chars Default_fg Default_bg
+Width Height Number_color_chars Default_fg Default_bg
 
 -- Number_color_chars overrides:
 Format ...params

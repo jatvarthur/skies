@@ -152,5 +152,8 @@
     <Text Include="assets\level1.ui.txt">
       <Filter>Assets</Filter>
     </Text>
+    <Text Include="assets\london.skii.txt">
+      <Filter>Assets</Filter>
+    </Text>
   </ItemGroup>
 </Project>

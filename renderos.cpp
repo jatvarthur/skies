@@ -109,6 +109,18 @@ int drawString(int x, int y, const char* s, color_t fg, color_t bg)
 	return 1;
 }
 
+int drawLine(int x, int y, int w, char cleft, char cfill, char cright, color_t fg, color_t bg)
+{
+	drawChar(x, y, cleft, fg, bg);
+	int xw = x + w - 2;
+	for (++x; x < xw; ++x) {
+		drawChar(x, y, cfill, fg, bg);
+	}
+	drawChar(x, y, cright, fg, bg);
+
+	return 1;
+}
+
 int drawImage(int xDst, int yDst, int xSrc, int ySrc, int wSrc, int hSrc, const SkiiImage& image)
 {
 	assert(pCtx != nullptr);
@@ -184,11 +196,18 @@ int putAttrs(int x, int y, color_t fg, color_t bg)
 	return 1;
 }
 
+void drawIdentity()
+{
+	assert(pCtx != nullptr);
+	pCtx->tx = 0;
+	pCtx->ty = 0;
+}
+
 void drawTranslate(int x, int y)
 {
 	assert(pCtx != nullptr);
-	pCtx->tx = x;
-	pCtx->ty = y;
+	pCtx->tx = pCtx->tx + x;
+	pCtx->ty = pCtx->ty + y;
 }
 
 

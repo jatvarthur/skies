@@ -1,7 +1,39 @@
 1
 
-trade_post 0 0 30 20
-1
-L label1 2 2 2
+trade_post 20 20 19 8 70 60 2 196 179 218 192 191 217 
+25
+I image1 0 0 0 0 london.skii 
+T text1 4 2 31 8 2
 Hello, stranger!
 You stand amidst crowded area...
+
+L l_stock_t 10 6 27 8 Stock
+L l_cargo_t 18 6 27 8 Cargo
+
+L l_alloy_r  2 8  30 8 Alloy
+L l_food_r   2 10 30 8 Food
+L l_aether_r 2 12 30 8 AEther
+
+N n_alloy_st  10  8 26 8 5 0
+N n_food_st   10 10 26 8 5 0
+N n_aether_st 10 12 26 8 5 0
+
+N n_alloy_cr  18  8 26 8 5 10
+N n_food_cr   18 10 26 8 5 10
+N n_aether_cr 18 12 26 8 5 10
+
+B b_alloy_b  26  8 19 8 Buy
+B b_food_b   26 10 19 8 Buy
+B b_aether_b 26 12 19 8 Buy
+
+N n_alloy_b  29  8 26 8 5 0
+N n_food_b   29 10 26 8 5 0
+N n_aether_b 29 12 26 8 5 0
+
+B b_alloy_s  36  8 19 8 Sell
+B b_food_s   36 10 19 8 Sell
+B b_aether_s 36 12 19 8 Sell
+
+N n_alloy_s  40  8 26 8 5 0
+N n_food_s   40 10 26 8 5 0
+N n_aether_s 40 12 26 8 5 0

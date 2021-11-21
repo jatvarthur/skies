@@ -44,6 +44,9 @@ bool gameInit()
 bool gameAwake()
 {
 	scriptSystemAwake(g_entityManager);
+
+	//todo: remove
+	g_uiManager.showWindow("trade_post");
 	return true;
 }
 
@@ -59,6 +62,7 @@ void gameStep(float delta)
 	scriptSystem(g_entityManager, delta);
 	physicsSystem(g_entityManager, delta);
 
+	drawIdentity();
 	// "Logical" rendering
 	g_camera.apply();
 
@@ -69,7 +73,7 @@ void gameStep(float delta)
 	renderSystem(g_entityManager);
 
 	// 3. UI, third layer
-	drawTranslate(0, 0);
+	g_uiManager.render();
 	// todo:
 
 	int y = 62, x = 3;
@@ -85,6 +89,7 @@ void gameStep(float delta)
 void gameShutdown()
 {
 	scriptSystemShutdown(g_entityManager);
+	g_uiManager.shutdown();
 }
 
 void gameClean()

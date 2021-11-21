@@ -1,11 +1,14 @@
 Number_of_windows
 -- Window_desc:
 Id: string
-X Y Width Height
+X Y Border_color Bg_color Width Height Border_format (0 no border 1 chars 2 codes) Char_horz Char_vert Char_LT Char_LB Char_RT Char_RB 
 Number_of_controls
 -- Control_desc:
-L (label) Id X Y Number_of_strings
+T (text) Id X Y Fg_color Bg_color Number_of_strings
 str1
 str2
 ...
-I (image) Id X Y File_name
+I (image) Id X Y 0 0 File_name
+L (label) Id X Y Fg_color Bg_color Str_until_CRLF
+N (number) Id X Y Fg_color Bg_color Width Value
+B (button) Id X Y Fg_color Bg_color Str_until_CRLF
