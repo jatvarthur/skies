@@ -84,7 +84,7 @@ inline vec2f operator/(vec2f lhs, float rhs)
 	return vec2f(lhs.x / rhs, lhs.y / rhs);
 }
 
-void _debug(const wchar_t* fmt, ...);
+void _debug(const char* fmt, ...);
 
 static inline void ltrim(std::string& s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {

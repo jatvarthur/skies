@@ -1,7 +1,10 @@
 #pragma once
 
 enum Key {
+	KEY_TAB		= 0x09,
 	KEY_RETURN	= 0x0D,
+	KEY_ESCAPE	= 0x1B,
+	KEY_SPACE	= 0x20,
 
 	KEY_LEFT	= 0x25,
 	KEY_UP,

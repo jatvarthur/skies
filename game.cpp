@@ -44,9 +44,6 @@ bool gameInit()
 bool gameAwake()
 {
 	scriptSystemAwake(g_entityManager);
-
-	//todo: remove
-	g_uiManager.showWindow("trade_post");
 	return true;
 }
 
@@ -59,22 +56,23 @@ void gameStep(float delta)
 		gameAwake();
 	}
 
-	scriptSystem(g_entityManager, delta);
-	physicsSystem(g_entityManager, delta);
+	if (g_uiManager.preUpdate(delta)) {
+		scriptSystem(g_entityManager, delta);
+		physicsSystem(g_entityManager, delta);
+		g_uiManager.update(delta);
+	}
 
-	drawIdentity();
 	// "Logical" rendering
+	drawIdentity();
 	g_camera.apply();
 
 	// 1. tilemap, first layer
 	drawImage(0, 0, 0, 0, g_level.tilemap.width(), g_level.tilemap.height(), g_level.tilemap);
-
 	// 2. game objects, second layer
 	renderSystem(g_entityManager);
-
 	// 3. UI, third layer
 	g_uiManager.render();
-	// todo:
+
 
 	int y = 62, x = 3;
 	for (int i = 1; i < 256; ++i, ++x) {

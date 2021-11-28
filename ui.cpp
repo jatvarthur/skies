@@ -1,6 +1,7 @@
 #include "ui.h"
 #include <cassert>
 #include <fstream>
+#include "keybrd.h"
 
 
 void Control::load(std::istream& is)
@@ -74,13 +75,27 @@ void Button::load(std::istream& is)
 {
 	Control::load(is);
 
+	int bg_focused;
+	is >> bg_focused >> width_;
+	bgFocused_ = bg_focused;
+
 	std::getline(is, caption_, '\n');
 	ltrim(caption_);
+
+	int spacesTotal = width_ - caption_.size();
+	assert(spacesTotal >= 0);
+	int spacesLeft = spacesTotal / 2;
+	if (spacesLeft > 0) {
+		caption_.insert(caption_.begin(), spacesLeft, ' ');
+	}
+	if (spacesTotal - spacesLeft > 0) {
+		caption_.insert(caption_.end(), spacesTotal - spacesLeft, ' ');
+	}
 }
 
 void Button::paint()
 {
-	drawString(x_, y_, caption_.c_str(), fg_, bg_);
+	drawString(x_, y_, caption_.c_str(), fg_, focused() ? bgFocused_ : bg_);
 }
 
 
@@ -174,6 +189,75 @@ void Window::paint()
 	}
 }
 
+bool Window::processInput(UiEventListener* listener)
+{
+	if (keyIsPressed(KEY_TAB)) {
+		int nextIndex = findNextFocusableIndex();
+		if (nextIndex != -1) {
+			if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
+			focusedIndex_ = nextIndex;
+			controls_[focusedIndex_]->setFocused(true);
+		}
+		return true;
+	}
+
+	bool isEnter = keyIsPressed(KEY_RETURN);
+	bool isSpace = keyIsPressed(KEY_SPACE);
+	if ((isEnter || isSpace) && focusedIndex_ != -1 && listener) {
+		listener->onClick(this, controls_[focusedIndex_].get());
+		return true;
+	}
+
+	return false;
+}
+
+void Window::prepare(UiEventListener* listener)
+{
+	x_ = (g_windowWidth - width_) / 2;
+	y_ = (g_windowHeight - height_) / 2;
+
+	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
+	focusedIndex_ = -1;
+	focusedIndex_ = findNextFocusableIndex();
+	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(true);
+
+	if (listener != nullptr) listener->onPrepare(this);
+}
+
+Control* Window::findControl(const std::string& id)
+{
+	for (std::unique_ptr<Control>& c : controls_) {
+		if (c->is(id)) {
+			return c.get();
+		}
+	}
+	assert(false && "Unknown control id");
+	return nullptr;
+}
+
+int Window::findNextFocusableIndex()
+{
+	if (controls_.empty()) {
+		return -1;
+	}
+
+	int nextIndex = (focusedIndex_ + 1) % controls_.size();
+	do {
+		if (controls_[nextIndex]->isFocusable()) {
+			return nextIndex;
+		}
+		nextIndex = (nextIndex + 1) % controls_.size();
+	} while (nextIndex - 1 != focusedIndex_);
+
+	return -1;
+}
+
+
+UiManager::UiManager()
+	: activeModal_(nullptr)
+	, activeListener_(nullptr)
+{
+}
 
 void UiManager::showWindow(const std::string& id)
 {
@@ -192,12 +276,36 @@ void UiManager::closeWindow()
 
 }
 
+void UiManager::showModal(const std::string& id, UiEventListener* listener)
+{
+	assert(activeModal_ == nullptr);
+
+	for (std::unique_ptr<Window>& w : windows_) {
+		if (w->is(id)) {
+			assert(!isVisible(w.get()));
+			if (!isVisible(w.get())) {
+				activeModal_ = w.get();
+				activeModal_->prepare(listener);
+				activeListener_ = listener;
+			}
+			break;
+		}
+	}
+}
+
+void UiManager::closeModal()
+{
+	assert(activeModal_ != nullptr);
+	activeModal_ = nullptr;
+	activeListener_ = nullptr;
+}
+
 bool UiManager::isVisible(Window* window)
 {
 	for (Window* w : visible_) {
 		if (w == window) return true;
 	}
-	return false;
+	return activeModal_ == window;
 }
 
 void UiManager::load(std::istream& is)
@@ -212,16 +320,42 @@ void UiManager::load(std::istream& is)
 	}
 }
 
+bool UiManager::preUpdate(float delta)
+{
+	if (!activeModal_) {
+		return true;
+	}
+
+	if (keyIsPressed(KEY_ESCAPE)) {
+		closeModal();
+		return false;
+	}
+
+	activeModal_->processInput(activeListener_);
+	return false;
+}
+
+void UiManager::update(float delta)
+{
+
+}
+
 void UiManager::render()
 {
 	for (Window* w : visible_) {
 		drawIdentity();
 		w->paint();
 	}
+
+	if (activeModal_) {
+		drawIdentity();
+		activeModal_->paint();
+	}
 }
 
 void UiManager::shutdown()
 {
+	if (activeModal_) closeModal();
 	visible_.clear();
 	windows_.clear();
 }

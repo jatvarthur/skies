@@ -22,6 +22,8 @@ public:
 	{}
 	virtual ~Script() {}
 
+	virtual const std::string& getScriptType() const = 0;
+
 	virtual void awake() {}
 	virtual void shutdown() {}
 	virtual void update(float delta) {}
@@ -51,9 +53,16 @@ private:
 	std::unordered_map<std::string, ScriptFactoryProc_t> registry_;
 };
 
+#define SCRIPT(scriptClass) \
+	virtual const std::string& getScriptType() const override \
+	{ \
+		static std::string scriptType(#scriptClass); \
+		return scriptType; \
+	}
+
 #define REGISTER_SCRIPT(scriptClass) \
-	static class scriptClass ## Factory {	\
-	public:							\
+	static class scriptClass ## Factory { \
+	public: \
 		scriptClass ## Factory() { ScriptRegistry::get().registerFactory(#scriptClass, createScript); } \
 		static Script* createScript(EntityManager& em, Entity_t id) { return new scriptClass(em, id); }	\
 	} s_ ## scriptClass ## Factory

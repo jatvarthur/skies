@@ -6,6 +6,10 @@
 REGISTER_SCRIPT(ZeppelinScript);
 REGISTER_SHADER(shdZeppelinLight);
 
+void ZeppelinScript::awake()
+{
+}
+
 void ZeppelinScript::update(float delta)
 {
 	PhysicsComponent *phys = em_.getPhysicsComponent(id_);
@@ -32,6 +36,10 @@ void ZeppelinScript::update(float delta)
 void ZeppelinScript::load(std::istream& is)
 {
 	is >> m_thrust_ >> m_torque_;
+
+	for (int i = 0; i < N_RESOURCES; ++i) {
+		is >> resources_[i];
+	}
 }
 
 

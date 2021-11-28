@@ -4,13 +4,13 @@
 #include "winos.h"
 
 
-void _debug(const wchar_t* fmt, ...)
+void _debug(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	wchar_t s[255] = { 0 };
-	_vsnwprintf_s(s, 254, fmt, args);
-	OutputDebugString(s);
+	char s[255] = { 0 };
+	_vsnprintf_s(s, 254, fmt, args);
+	OutputDebugStringA(s);
 	va_end(args);
 }
 

@@ -11,4 +11,4 @@ str2
 I (image) Id X Y 0 0 File_name
 L (label) Id X Y Fg_color Bg_color Str_until_CRLF
 N (number) Id X Y Fg_color Bg_color Width Value
-B (button) Id X Y Fg_color Bg_color Str_until_CRLF
+B (button) Id X Y Fg_color Bg_color Bg_focused_color Width Str_until_CRLF
