@@ -48,6 +48,9 @@ void TradePostScript::onCollision(int x, int y, Entity_t source, Entity_t hit)
 	}
 }
 
+static const std::string FIELD_PLAYER_WEIGHT = "n_player_weight";
+static const std::string FIELD_PLAYER_M_WEIGHT = "n_player_m_weight";
+static const std::string FIELD_PLAYER_MONEY = "n_player_money";
 // ! order of items should conform to enum Resource
 static const std::string FILEDS_STOCK[] = {
 	"n_alloy_st", "n_aether_st", "n_food_st", "n_luxury_st", "n_weapon_st"
@@ -61,31 +64,85 @@ static const std::string FILEDS_BUY[] = {
 static const std::string FILEDS_SELL[] = {
 	"n_alloy_s", "n_aether_s", "n_food_s", "n_luxury_s", "n_weapon_s"
 };
+static const std::string BUTTONS_BUY[] = {
+	"b_alloy_b", "b_aether_b", "b_food_b", "b_luxury_b", "b_weapon_b"
+};
+static const std::string BUTTONS_SELL[] = {
+	"b_alloy_s", "b_aether_s", "b_food_s", "b_luxury_s", "b_weapon_s"
+};
 
-void TradePostScript::onPrepare(Window* window)
+int findResourceByButton(const std::string& id, const std::string buttons[], int nButtons)
+{
+	for (int i = 0; i < nButtons; ++i) {
+		if (id == buttons[i]) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+void TradePostScript::updateControls(Window* window)
 {
 	ZeppelinScript* player = getPlayer();
 	NumberField* nf;
+	Button* b;
 	for (int i = 0; i < N_RESOURCES; ++i) {
 		nf = (NumberField*)window->findControl(FILEDS_STOCK[i]);
 		nf->setValue(resources_[i].stock);
 
 		nf = (NumberField*)window->findControl(FILEDS_CARGO[i]);
-		nf->setValue(player->getCargoResource(i));
+		nf->setValue(player->cargo(i));
 
-		// buy for player, sell for trade post 
+		int stock = resources_[i].stock;
+		// buy for player, sell for trade post
+		int sellPrice = getSellPrice(i, stock);
+		bool canBuy = stock > 0 && player->money() >= sellPrice 
+			&& player->cargoWeight() < player->maxCargoWeight();	
 		nf = (NumberField*)window->findControl(FILEDS_BUY[i]);
-		nf->setValue(getSellPrice(i, resources_[i].stock));
+		nf->setValue(sellPrice);
+		b = (Button*)window->findControl(BUTTONS_BUY[i]);
+		window->enableControl(b, canBuy);
 
-		// sell for player, buy for thrade post
+		// sell for player, buy for trade post
+		int buyPrice = getSellPrice(i, stock + 1);
+		bool canSell = player->cargo(i) > 0 && stock < resources_[i].maxStock;
 		nf = (NumberField*)window->findControl(FILEDS_SELL[i]);
-		nf->setValue(getSellPrice(i, resources_[i].stock + 1));
+		nf->setValue(buyPrice);
+		b = (Button*)window->findControl(BUTTONS_SELL[i]);
+		window->enableControl(b, canSell);
 	}
+
+	nf = (NumberField*)window->findControl(FIELD_PLAYER_WEIGHT);
+	nf->setValue(player->cargoWeight());
+	nf = (NumberField*)window->findControl(FIELD_PLAYER_M_WEIGHT);
+	nf->setValue(player->maxCargoWeight());
+	nf = (NumberField*)window->findControl(FIELD_PLAYER_MONEY);
+	nf->setValue(player->money());
+}
+
+void TradePostScript::onPrepare(Window* window)
+{
+	updateControls(window);
 }
 
 void TradePostScript::onClick(Window* window, Control* sender)
 {
 	_debug("Clicked: %s\n", sender->id().c_str());
+
+	int res = findResourceByButton(sender->id(), BUTTONS_BUY, NELEMS(BUTTONS_BUY));
+	if (res != -1) {
+		sellToPlayer(res);
+		updateControls(window);
+		return;
+	}
+
+	res = findResourceByButton(sender->id(), BUTTONS_SELL, NELEMS(BUTTONS_SELL));
+	if (res != -1) {
+		buyFromPlayer(res);
+		updateControls(window);
+		return;
+	}
 }
 
 ZeppelinScript* TradePostScript::getPlayer()
@@ -105,4 +162,26 @@ int TradePostScript::getSellPrice(int name, int stock)
 	}
 
 	return r.maxPrice - (r.maxPrice - r.minPrice) * stock / r.maxStock;
+}
+
+void TradePostScript::sellToPlayer(int name)
+{
+	assert(resources_[name].stock > 0);
+
+	ZeppelinScript* player = getPlayer();
+	int price = getSellPrice(name, resources_[name].stock);
+
+	player->buy(name, price);
+	resources_[name].stock -= 1;
+}
+
+void TradePostScript::buyFromPlayer(int name)
+{
+	assert(resources_[name].stock < resources_[name].maxStock);
+
+	ZeppelinScript* player = getPlayer();
+	int price = getSellPrice(name, resources_[name].stock + 1);
+
+	player->sell(name, price);
+	resources_[name].stock += 1;
 }

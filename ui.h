@@ -16,9 +16,12 @@ public:
 };
 
 class Control {
+	friend class Window;
 public:
 	Control()
 		: focused_(false)
+		, enabled_(true)
+		, row_(-1), col_(-1)
 	{}
 	virtual ~Control() = default;
 
@@ -35,7 +38,7 @@ public:
 		return id == id_; 
 	}
 
-	virtual bool isFocusable() const
+	virtual bool focusable() const
 	{
 		return false;
 	}
@@ -45,9 +48,30 @@ public:
 		return focused_;
 	}
 
+	bool enabled() const
+	{
+		return enabled_;
+	}
+
+	int row()
+	{
+		return row_;
+	}
+
+	int col()
+	{
+		return col_;
+	}
+
+protected:
 	void setFocused(bool value)
 	{
 		focused_ = value;
+	}
+
+	void setEnabled(bool value)
+	{
+		enabled_ = value;
 	}
 
 protected:
@@ -56,6 +80,8 @@ protected:
 	color_t fg_;
 	color_t bg_;
 	bool focused_;
+	bool enabled_;
+	int row_, col_;
 };
 
 class Label : public Control
@@ -107,7 +133,7 @@ public:
 
 	virtual void load(std::istream& is) override;
 	virtual void paint() override;
-	virtual bool isFocusable() const
+	virtual bool focusable() const
 	{
 		return true;
 	}
@@ -116,6 +142,7 @@ private:
 	color_t bgFocused_;
 	int width_;
 	std::string caption_;
+	color_t fgDisabled_;
 };
 
 class Image : public Control
@@ -138,6 +165,10 @@ class Window : public Control
 public:
 	Window()
 		: focusedIndex_(-1)
+		, focusedRow_(-1)
+		, focusedCol_(-1)
+		, maxRow_(-1)
+		, maxCol_(-1)
 	{}
 	~Window() = default;
 
@@ -147,17 +178,23 @@ public:
 	virtual void prepare(UiEventListener* listener);
 
 	Control* findControl(const std::string& id);
+	void enableControl(Control* control, bool enabled);
 
 protected:
+	void focusControl(int focusedIndex);
 	int findNextFocusableIndex();
+	void focusNextControl();
+	int findGridFocusableIndex(int row, int col, int deltaRow, int deltaCol);
 
 protected:
 	int width_;
 	int height_;
-	int border_type_;
-	char border_chars_[6];
+	int borderType_;
+	char borderChars_[6];
 	std::vector<std::unique_ptr<Control>> controls_;
 	int focusedIndex_;
+	int focusedRow_, focusedCol_;
+	int maxRow_, maxCol_;
 };
 
 class UiManager final {

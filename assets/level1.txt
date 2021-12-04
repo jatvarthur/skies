@@ -9,7 +9,7 @@ level1
 P 112 48 180
 Y 500 80.0
 R @ 27 0 1 shdZeppelinLight 2 30.0 7.0
-S ZeppelinScript 150.0 0.5 0 12 3 0 1
+S ZeppelinScript 150.0 0.5 20 100 0 12 3 0 1
 
 2
 P 108 48 0

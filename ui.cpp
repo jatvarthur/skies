@@ -6,10 +6,10 @@
 
 void Control::load(std::istream& is)
 {
-	int fg_color, bg_color;
-	is >> id_ >> x_ >> y_ >> fg_color >> bg_color;
-	fg_ = fg_color;
-	bg_ = bg_color;
+	int fg, bg;
+	is >> id_ >> x_ >> y_ >> fg >> bg;
+	fg_ = fg;
+	bg_ = bg;
 }
 
 
@@ -75,9 +75,10 @@ void Button::load(std::istream& is)
 {
 	Control::load(is);
 
-	int bg_focused;
-	is >> bg_focused >> width_;
-	bgFocused_ = bg_focused;
+	int bgFocused, fgDisabled;
+	is >> bgFocused >> fgDisabled >> row_ >> col_ >> width_;
+	bgFocused_ = bgFocused;
+	fgDisabled_ = fgDisabled;
 
 	std::getline(is, caption_, '\n');
 	ltrim(caption_);
@@ -95,7 +96,10 @@ void Button::load(std::istream& is)
 
 void Button::paint()
 {
-	drawString(x_, y_, caption_.c_str(), fg_, focused() ? bgFocused_ : bg_);
+	color_t fg = enabled() ? fg_ : fgDisabled_;
+	color_t bg = focused() ? bgFocused_ : bg_;
+
+	drawString(x_, y_, caption_.c_str(), fg, bg);
 }
 
 
@@ -133,18 +137,18 @@ void Window::load(std::istream& is)
 	Control::load(is);
 
 	int nControls;
-	is >> width_ >> height_ >> border_type_;
-	if (border_type_ == 0) {
-		std::fill_n(border_chars_, NELEMS(border_chars_), ' ');
-	} else if (border_type_ == 1) {
-		for (int i = 0; i < NELEMS(border_chars_); ++i) {
-			is >> border_chars_[i];
+	is >> width_ >> height_ >> borderType_;
+	if (borderType_ == 0) {
+		std::fill_n(borderChars_, NELEMS(borderChars_), ' ');
+	} else if (borderType_ == 1) {
+		for (int i = 0; i < NELEMS(borderChars_); ++i) {
+			is >> borderChars_[i];
 		}
-	} else if (border_type_ == 2) {
-		for (int i = 0; i < NELEMS(border_chars_); ++i) {
+	} else if (borderType_ == 2) {
+		for (int i = 0; i < NELEMS(borderChars_); ++i) {
 			int c;
 			is >> c;
-			border_chars_[i] = c;
+			borderChars_[i] = c;
 		}
 	}
 
@@ -154,6 +158,8 @@ void Window::load(std::istream& is)
 		is >> type;
 		std::unique_ptr<Control> c = make_control(type);
 		c->load(is);
+		if (c->row() > maxRow_) maxRow_ = c->row();
+		if (c->col() > maxCol_) maxCol_ = c->col();
 		controls_.push_back(std::move(c));
 	}
 }
@@ -168,18 +174,18 @@ const int CHAR_RB = 5;
 void Window::paint()
 {
 	drawLine(x_, y_, width_,
-		border_chars_[CHAR_LT], border_chars_[CHAR_HORZ], border_chars_[CHAR_RT],
+		borderChars_[CHAR_LT], borderChars_[CHAR_HORZ], borderChars_[CHAR_RT],
 		fg_, bg_);
 
 	int yh = y_ + height_ - 1;
 	for (int y = y_ + 1 ; y < yh; ++y) {
 		drawLine(x_, y, width_,
-			border_chars_[CHAR_VERT], ' ', border_chars_[CHAR_VERT],
+			borderChars_[CHAR_VERT], ' ', borderChars_[CHAR_VERT],
 			fg_, bg_);
 	}
 
 	drawLine(x_, y_ + height_ - 1, width_,
-		border_chars_[CHAR_LB], border_chars_[CHAR_HORZ], border_chars_[CHAR_RB],
+		borderChars_[CHAR_LB], borderChars_[CHAR_HORZ], borderChars_[CHAR_RB],
 		fg_, bg_);
 
 	// todo: transformation stack
@@ -192,18 +198,40 @@ void Window::paint()
 bool Window::processInput(UiEventListener* listener)
 {
 	if (keyIsPressed(KEY_TAB)) {
-		int nextIndex = findNextFocusableIndex();
-		if (nextIndex != -1) {
-			if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
-			focusedIndex_ = nextIndex;
-			controls_[focusedIndex_]->setFocused(true);
-		}
+		focusNextControl();
+		return true;
+	}
+
+	bool isLeft = keyIsPressed(KEY_LEFT);
+	bool isRight = keyIsPressed(KEY_RIGHT);
+	bool isUp = keyIsPressed(KEY_UP);
+	bool isDown = keyIsPressed(KEY_DOWN);
+	int focusedIndex = -1;
+	if (isLeft && focusedRow_ != -1 && focusedCol_ > 0) {
+		focusedIndex = findGridFocusableIndex(focusedRow_, focusedCol_, 0, -1);
+	}
+
+	if (isRight && focusedRow_ != -1 && focusedCol_ < maxCol_) {
+		focusedIndex = findGridFocusableIndex(focusedRow_, focusedCol_, 0, 1);
+	}
+	
+	if (isUp && focusedCol_ != -1 && focusedRow_ > 0) {
+		focusedIndex = findGridFocusableIndex(focusedRow_, focusedCol_, -1, 0);
+	}
+
+	if (isDown && focusedCol_ != -1 && focusedRow_ < maxRow_) {
+		focusedIndex = findGridFocusableIndex(focusedRow_, focusedCol_, 1, 0);
+	}
+
+	if (focusedIndex != -1) {
+		focusControl(focusedIndex);
 		return true;
 	}
 
 	bool isEnter = keyIsPressed(KEY_RETURN);
 	bool isSpace = keyIsPressed(KEY_SPACE);
-	if ((isEnter || isSpace) && focusedIndex_ != -1 && listener) {
+	if ((isEnter || isSpace) && listener && focusedIndex_ != -1 
+			&& controls_[focusedIndex_]->enabled()) {
 		listener->onClick(this, controls_[focusedIndex_].get());
 		return true;
 	}
@@ -218,8 +246,7 @@ void Window::prepare(UiEventListener* listener)
 
 	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
 	focusedIndex_ = -1;
-	focusedIndex_ = findNextFocusableIndex();
-	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(true);
+	focusNextControl();
 
 	if (listener != nullptr) listener->onPrepare(this);
 }
@@ -235,6 +262,26 @@ Control* Window::findControl(const std::string& id)
 	return nullptr;
 }
 
+void Window::enableControl(Control* control, bool enabled)
+{
+	control->setEnabled(enabled);
+}
+
+void Window::focusControl(int focusedIndex)
+{
+	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
+	focusedIndex_ = focusedIndex;
+	if (focusedIndex_ != -1) {
+		controls_[focusedIndex_]->setFocused(true);
+		focusedRow_ = controls_[focusedIndex_]->row();
+		focusedCol_ = controls_[focusedIndex_]->col();
+	} else {
+		focusedRow_ = -1;
+		focusedCol_ = -1;
+	}
+}
+
+
 int Window::findNextFocusableIndex()
 {
 	if (controls_.empty()) {
@@ -243,12 +290,40 @@ int Window::findNextFocusableIndex()
 
 	int nextIndex = (focusedIndex_ + 1) % controls_.size();
 	do {
-		if (controls_[nextIndex]->isFocusable()) {
+		if (controls_[nextIndex]->focusable()) {
 			return nextIndex;
 		}
 		nextIndex = (nextIndex + 1) % controls_.size();
 	} while (nextIndex - 1 != focusedIndex_);
 
+	return -1;
+}
+
+void Window::focusNextControl()
+{
+	int nextIndex = findNextFocusableIndex();
+	focusControl(nextIndex);
+}
+
+int Window::findGridFocusableIndex(int row, int col, int deltaRow, int deltaCol)
+{
+	if (maxRow_ == -1 || maxCol_ == -1) return -1;
+
+	row += deltaRow;
+	col += deltaCol;
+	while (row >= 0 && col >= 0 && row <= maxRow_ && col <= maxCol_) {
+		for (int i = 0; i < (int)controls_.size(); ++i) {
+			Control* c = controls_[i].get();
+			if (c->row() == row && c->col() == col) {
+				if (!c->focusable()) {
+					break;
+				}
+				return i;
+			}
+		}
+		row += deltaRow;
+		col += deltaCol;
+	}
 	return -1;
 }
 

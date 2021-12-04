@@ -33,6 +33,11 @@ public:
 protected:
 	ZeppelinScript* getPlayer();
 	int getSellPrice(int name, int stock);
+	void sellToPlayer(int name);
+	void buyFromPlayer(int name);
+
+	void updateControls(Window* window);
+
 
 private:
 	ResourceData resources_[N_RESOURCES];

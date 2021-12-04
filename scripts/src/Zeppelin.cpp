@@ -21,25 +21,49 @@ void ZeppelinScript::update(float delta)
 		// do nothing, as steering is cancelled out
 		phys->torque = 0;
 	} else if (isLeft) {
-		phys->torque = -m_torque_;
+		phys->torque = -torque_;
 	} else if (isRight) {
-		phys->torque = m_torque_;
+		phys->torque = torque_;
 	}
 
 	if (keyIsDown(KEY_DOWN)) {
-		phys->thrust = -m_thrust_ / 3;
+		phys->thrust = -thrust_ / 3;
 	} else if (keyIsDown(KEY_UP)) {
-		phys->thrust = m_thrust_;
+		phys->thrust = thrust_;
 	}
 }
 
 void ZeppelinScript::load(std::istream& is)
 {
-	is >> m_thrust_ >> m_torque_;
+	is >> thrust_ >> torque_ >> maxCargoWeight_ >> money_;
 
+	cargoWeight_ = 0;
 	for (int i = 0; i < N_RESOURCES; ++i) {
-		is >> resources_[i];
+		is >> cargo_[i];
+		cargoWeight_ += cargo_[i];
 	}
+
+	assert(cargoWeight_ <= maxCargoWeight_);
+}
+
+void ZeppelinScript::buy(int name, int price)
+{
+	assert(name >= 0 && name < N_RESOURCES);
+	assert(cargoWeight_ < maxCargoWeight_);
+	
+	pay(price);
+	cargo_[name] += 1;
+	cargoWeight_ += 1;
+}
+
+void ZeppelinScript::sell(int name, int price)
+{
+	assert(name >= 0 && name < N_RESOURCES);
+	assert(cargo_[name] > 0);
+
+	earn(price);
+	cargo_[name] -= 1;
+	cargoWeight_ -= 1;
 }
 
 
