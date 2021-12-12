@@ -143,6 +143,18 @@
   <ItemGroup>
     <ClInclude Include="ecs.h" />
     <ClInclude Include="engine.h" />
+    <ClInclude Include="engine\ecs.h" />
+    <ClInclude Include="engine\engine.h" />
+    <ClInclude Include="engine\game.h" />
+    <ClInclude Include="engine\keybrd.h" />
+    <ClInclude Include="engine\keybrdos.h" />
+    <ClInclude Include="engine\level.h" />
+    <ClInclude Include="engine\render.h" />
+    <ClInclude Include="engine\renderos.h" />
+    <ClInclude Include="engine\targetver.h" />
+    <ClInclude Include="engine\ui.h" />
+    <ClInclude Include="engine\winos.h" />
+    <ClInclude Include="engine\winres\resource.h" />
     <ClInclude Include="keybrd.h" />
     <ClInclude Include="keybrdos.h" />
     <ClInclude Include="level.h" />
@@ -161,6 +173,17 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="ecs.cpp" />
     <ClCompile Include="engineos.cpp" />
+    <ClCompile Include="engine\src\driver.cpp" />
+    <ClCompile Include="engine\src\ecs.cpp" />
+    <ClCompile Include="engine\src\engineos.cpp" />
+    <ClCompile Include="engine\src\game.cpp" />
+    <ClCompile Include="engine\src\keybrdos.cpp" />
+    <ClCompile Include="engine\src\level.cpp" />
+    <ClCompile Include="engine\src\physics.cpp" />
+    <ClCompile Include="engine\src\renderos.cpp" />
+    <ClCompile Include="engine\src\shader.cpp" />
+    <ClCompile Include="engine\src\skii_image.cpp" />
+    <ClCompile Include="engine\src\ui.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="keybrdos.cpp" />
     <ClCompile Include="level.cpp" />
@@ -173,9 +196,12 @@
     <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="engine\winres\skies.rc" />
     <ResourceCompile Include="skies.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="engine\winres\skies.ico" />
+    <Image Include="engine\winres\small.ico" />
     <Image Include="skies.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
@@ -185,6 +211,10 @@
     <Text Include="assets\level1.txt" />
     <Text Include="assets\level1.ui.txt" />
     <Text Include="assets\london.skii.txt" />
+    <Text Include="doc\game_format.txt" />
+    <Text Include="doc\level_format.txt" />
+    <Text Include="doc\skii_format.txt" />
+    <Text Include="doc\ui_format.txt" />
     <Text Include="game_format.txt" />
     <Text Include="level_format.txt" />
     <Text Include="skii_format.txt" />

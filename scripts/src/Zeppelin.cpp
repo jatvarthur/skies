@@ -1,13 +1,22 @@
 #include "..\Zeppelin.h"
 #include <cmath>
-#include "..\..\keybrd.h"
+#include "..\..\engine\keybrd.h"
 
 
 REGISTER_SCRIPT(ZeppelinScript);
 REGISTER_SHADER(shdZeppelinLight);
 
+static const std::string FILEDS_CARGO[] = {
+	"n_alloy", "n_aether", "n_food", "n_luxury", "n_weapon"
+};
+
 void ZeppelinScript::awake()
 {
+	hudWindow_ = g_uiManager.showWindow("zeppelin_hud", nullptr);
+	fieldMoney_ = (NumberField*)hudWindow_->findControl("n_money");
+	for (int i = 0; i < N_RESOURCES; ++i) {
+		fieldsCargo_[i] = (NumberField*)hudWindow_->findControl(FILEDS_CARGO[i]);
+	}
 }
 
 void ZeppelinScript::update(float delta)
@@ -30,6 +39,11 @@ void ZeppelinScript::update(float delta)
 		phys->thrust = -thrust_ / 3;
 	} else if (keyIsDown(KEY_UP)) {
 		phys->thrust = thrust_;
+	}
+
+	fieldMoney_->setValue(money());
+	for (int i = 0; i < N_RESOURCES; ++i) {
+		fieldsCargo_[i]->setValue(cargo(i));
 	}
 }
 

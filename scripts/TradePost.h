@@ -1,6 +1,6 @@
 #pragma once
-#include "..\ecs.h"
-#include "..\ui.h"
+#include "..\engine\ecs.h"
+#include "..\engine\ui.h"
 #include "Resources.h"
 #include "Zeppelin.h"
 
@@ -42,4 +42,6 @@ protected:
 private:
 	ResourceData resources_[N_RESOURCES];
 	float timeToUpdate_;
+	std::string postName_;
+	std::vector<std::string> flavor_;
 };

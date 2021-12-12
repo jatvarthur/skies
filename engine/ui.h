@@ -11,8 +11,8 @@ class Window;
 
 class UiEventListener {
 public:
-	virtual void onPrepare(Window* window) = 0;
-	virtual void onClick(Window* window, Control* sender) = 0;
+	virtual void onPrepare(Window* window) {}
+	virtual void onClick(Window* window, Control* sender) {}
 };
 
 class Control {
@@ -63,6 +63,12 @@ public:
 		return col_;
 	}
 
+	void setPosition(int x, int y)
+	{
+		x_ = x;
+		y_ = y;
+	}
+
 protected:
 	void setFocused(bool value)
 	{
@@ -92,6 +98,9 @@ public:
 
 	virtual void load(std::istream & is) override;
 	virtual void paint() override;
+
+	void setText(const std::string& value);
+
 private:
 	std::string text_;
 };
@@ -108,8 +117,13 @@ public:
 	void setValue(int value);
 
 private:
+	void updateText();
+
+private:
 	int value_;
 	int width_;
+	int align_;
+	char currencyChar_;
 	mutable std::string text_;
 };
 
@@ -121,6 +135,9 @@ public:
 
 	virtual void load(std::istream& is) override;
 	virtual void paint() override;
+
+	void setText(const std::vector<std::string>& value);
+
 private:
 	std::vector<std::string> text_;
 };
@@ -169,16 +186,31 @@ public:
 		, focusedCol_(-1)
 		, maxRow_(-1)
 		, maxCol_(-1)
+		, listener_(nullptr)
 	{}
 	~Window() = default;
 
 	virtual void load(std::istream& is) override;
 	virtual void paint() override;
-	virtual bool processInput(UiEventListener* listener);
-	virtual void prepare(UiEventListener* listener);
+	virtual bool processInput();
+	virtual void prepare();
+
+	void attachListener(UiEventListener* listener);
+	void detachListener();
 
 	Control* findControl(const std::string& id);
 	void enableControl(Control* control, bool enabled);
+
+public:
+	int width() const
+	{
+		return width_;
+	}
+
+	int height() const
+	{
+		return height_;
+	}
 
 protected:
 	void focusControl(int focusedIndex);
@@ -195,14 +227,16 @@ protected:
 	int focusedIndex_;
 	int focusedRow_, focusedCol_;
 	int maxRow_, maxCol_;
+	UiEventListener* listener_;
 };
 
 class UiManager final {
 public:
 	UiManager();
 
-	void showWindow(const std::string& id);
-	void closeWindow();
+	Window* showWindow(const std::string& id, UiEventListener* listener);
+	void closeWindow(const std::string& id);
+	Window* findWindow(const std::string& id);
 
 	void showModal(const std::string& id, UiEventListener* listener);
 	void closeModal();
@@ -220,7 +254,6 @@ private:
 	std::vector<std::unique_ptr<Window>> windows_;
 	std::vector<Window*> visible_;
 	Window* activeModal_;
-	UiEventListener* activeListener_;
 };
 
 extern UiManager g_uiManager;

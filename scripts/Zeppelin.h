@@ -1,5 +1,6 @@
 #pragma once
-#include "..\ecs.h"
+#include "..\engine\ecs.h"
+#include "..\engine\ui.h"
 #include "Resources.h"
 
 
@@ -60,6 +61,11 @@ private:
 	int cargoWeight_;
 	int cargo_[N_RESOURCES];
 	int money_;
+
+private:
+	Window* hudWindow_;
+	NumberField* fieldMoney_;
+	NumberField* fieldsCargo_[N_RESOURCES];
 };
 
 void shdZeppelinLight(const Shader* shader, EntityManager &em);

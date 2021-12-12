@@ -1,4 +1,5 @@
 #include "..\TradePost.h"
+#include "..\..\engine\engine.h"
 
 
 REGISTER_SCRIPT(TradePostScript);
@@ -35,6 +36,9 @@ void TradePostScript::load(std::istream& is)
 			>> resources_[i].minPrice 
 			>> resources_[i].maxPrice;
 	}
+
+	loadString(is, postName_, true);
+	loadText(is, flavor_);
 }
 
 void TradePostScript::onCollision(int x, int y, Entity_t source, Entity_t hit)
@@ -48,6 +52,8 @@ void TradePostScript::onCollision(int x, int y, Entity_t source, Entity_t hit)
 	}
 }
 
+static const std::string LABEL_POST_NAME = "l_post_name";
+static const std::string TEXT_POST_FLAVOR = "t_post_flavor";
 static const std::string FIELD_PLAYER_WEIGHT = "n_player_weight";
 static const std::string FIELD_PLAYER_M_WEIGHT = "n_player_m_weight";
 static const std::string FIELD_PLAYER_MONEY = "n_player_money";
@@ -119,6 +125,11 @@ void TradePostScript::updateControls(Window* window)
 	nf->setValue(player->maxCargoWeight());
 	nf = (NumberField*)window->findControl(FIELD_PLAYER_MONEY);
 	nf->setValue(player->money());
+
+	Label* pn = (Label*)window->findControl(LABEL_POST_NAME);
+	pn->setText(postName_);
+	Text* pf = (Text*)window->findControl(TEXT_POST_FLAVOR);
+	pf->setText(flavor_);
 }
 
 void TradePostScript::onPrepare(Window* window)

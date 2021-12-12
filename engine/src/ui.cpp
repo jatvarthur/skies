@@ -1,8 +1,8 @@
-#include "ui.h"
+#include "..\ui.h"
 #include <cassert>
 #include <fstream>
-#include "keybrd.h"
-
+#include "..\keybrd.h"
+#include "..\engine.h"
 
 void Control::load(std::istream& is)
 {
@@ -17,8 +17,7 @@ void Label::load(std::istream& is)
 {
 	Control::load(is);
 
-	std::getline(is, text_, '\n');
-	ltrim(text_);
+	loadString(is, text_, false);
 }
 
 void Label::paint()
@@ -26,26 +25,49 @@ void Label::paint()
 	drawString(x_, y_, text_.c_str(), fg_, bg_);
 }
 
+void Label::setText(const std::string& value)
+{
+	text_ = value;
+}
+
+
+const int NF_ALIGN_LEFT = 0;
+const int NF_ALIGN_CENTER = 1;
+const int NF_ALIGN_RIGHT = 2;
 
 void NumberField::load(std::istream& is)
 {
 	Control::load(is);
+	
+	int currencyCharCode;
+	is >> width_ >> align_ >> currencyCharCode >> value_;
+	currencyChar_ = currencyCharCode;
 
-	int value;
-	is >> width_ >> value;
-	setValue(value);
+	updateText();
 }
 
 void NumberField::paint()
 {
-	int ofs = std::max(0, width_ - (int)text_.size() + 1) / 2;
+	int ofs = 0;
+	if (align_ == NF_ALIGN_CENTER) {
+		ofs = std::max(0, width_ - (int)text_.size() + 1) / 2;
+	} else if (align_ == NF_ALIGN_RIGHT) {
+		ofs = std::max(0, width_ - (int)text_.size());
+	}
 	drawString(x_ + ofs, y_, text_.c_str(), fg_, bg_);
 }
 
 void NumberField::setValue(int value)
 {
+	if (value_ == value) return;
 	value_ = value;
-	text_ = std::to_string(value);
+	updateText();
+}
+
+void NumberField::updateText()
+{
+	text_ = std::to_string(value_);
+	if (currencyChar_) text_.insert(0, 1, currencyChar_);
 }
 
 
@@ -53,15 +75,7 @@ void Text::load(std::istream& is)
 {
 	Control::load(is);
 
-	int nStrings;
-	is >> nStrings;
-	is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	text_.reserve(nStrings);
-	for (int i = 0; i < nStrings; ++i) {
-		std::string s;
-		std::getline(is, s, '\n');
-		text_.push_back(std::move(s));
-	}
+	loadText(is, text_);
 }
 
 void Text::paint()
@@ -70,6 +84,12 @@ void Text::paint()
 		drawString(x_, y_ + i, text_[i].c_str(), fg_, bg_);
 	}
 }
+
+void Text::setText(const std::vector<std::string>& value)
+{
+	text_.assign(value.cbegin(), value.cend());
+}
+
 
 void Button::load(std::istream& is)
 {
@@ -189,13 +209,14 @@ void Window::paint()
 		fg_, bg_);
 
 	// todo: transformation stack
-	drawTranslate(x_ + 1, y_ + 1);
+	int d = borderType_ == 0 ? 0 : 1;
+	drawTranslate(x_ + d, y_ + d);
 	for (std::unique_ptr<Control>& c : controls_) {
 		c->paint();
 	}
 }
 
-bool Window::processInput(UiEventListener* listener)
+bool Window::processInput()
 {
 	if (keyIsPressed(KEY_TAB)) {
 		focusNextControl();
@@ -230,25 +251,32 @@ bool Window::processInput(UiEventListener* listener)
 
 	bool isEnter = keyIsPressed(KEY_RETURN);
 	bool isSpace = keyIsPressed(KEY_SPACE);
-	if ((isEnter || isSpace) && listener && focusedIndex_ != -1 
+	if ((isEnter || isSpace) && listener_ && focusedIndex_ != -1 
 			&& controls_[focusedIndex_]->enabled()) {
-		listener->onClick(this, controls_[focusedIndex_].get());
+		listener_->onClick(this, controls_[focusedIndex_].get());
 		return true;
 	}
 
 	return false;
 }
 
-void Window::prepare(UiEventListener* listener)
+void Window::prepare()
 {
-	x_ = (g_windowWidth - width_) / 2;
-	y_ = (g_windowHeight - height_) / 2;
-
 	if (focusedIndex_ != -1) controls_[focusedIndex_]->setFocused(false);
 	focusedIndex_ = -1;
 	focusNextControl();
 
-	if (listener != nullptr) listener->onPrepare(this);
+	if (listener_ != nullptr) listener_->onPrepare(this);
+}
+
+void Window::attachListener(UiEventListener* listener)
+{
+	listener_ = listener;
+}
+
+void Window::detachListener()
+{
+	listener_ = nullptr;
 }
 
 Control* Window::findControl(const std::string& id)
@@ -330,49 +358,66 @@ int Window::findGridFocusableIndex(int row, int col, int deltaRow, int deltaCol)
 
 UiManager::UiManager()
 	: activeModal_(nullptr)
-	, activeListener_(nullptr)
 {
 }
 
-void UiManager::showWindow(const std::string& id)
+Window* UiManager::showWindow(const std::string& id, UiEventListener* listener)
+{
+	Window* window = findWindow(id);
+	if (!window) return nullptr;
+
+	if (isVisible(window)) return window;
+	visible_.push_back(window);
+	window->attachListener(listener);
+	window->prepare();
+	return window;
+}
+
+void UiManager::closeWindow(const std::string& id)
+{
+	Window* window = findWindow(id);
+	if (!window) return;
+	
+	window->detachListener();
+	visible_.erase(std::remove_if(visible_.begin(), visible_.end(),
+		[window](const Window* item) { return item == window; }
+	));
+}
+
+Window* UiManager::findWindow(const std::string& id)
 {
 	for (std::unique_ptr<Window>& w : windows_) {
 		if (w->is(id)) {
-			if (!isVisible(w.get())) {
-				visible_.push_back(w.get());
-			}
-			break;
+			return w.get();
 		}
 	}
-}
-
-void UiManager::closeWindow()
-{
-
+	assert(false && "Unknown window identifier");
+	return nullptr;
 }
 
 void UiManager::showModal(const std::string& id, UiEventListener* listener)
 {
 	assert(activeModal_ == nullptr);
 
-	for (std::unique_ptr<Window>& w : windows_) {
-		if (w->is(id)) {
-			assert(!isVisible(w.get()));
-			if (!isVisible(w.get())) {
-				activeModal_ = w.get();
-				activeModal_->prepare(listener);
-				activeListener_ = listener;
-			}
-			break;
-		}
-	}
+	Window* window = findWindow(id);
+	if (!window) return;
+
+	assert(!isVisible(window));
+	if (isVisible(window)) return;
+
+	activeModal_ = window;
+	activeModal_->attachListener(listener);
+	activeModal_->setPosition(
+		(g_windowWidth - window->width()) / 2,
+		(g_windowHeight - window->height()) / 2
+	);
+	activeModal_->prepare();
 }
 
 void UiManager::closeModal()
 {
 	assert(activeModal_ != nullptr);
 	activeModal_ = nullptr;
-	activeListener_ = nullptr;
 }
 
 bool UiManager::isVisible(Window* window)
@@ -406,13 +451,12 @@ bool UiManager::preUpdate(float delta)
 		return false;
 	}
 
-	activeModal_->processInput(activeListener_);
+	activeModal_->processInput();
 	return false;
 }
 
 void UiManager::update(float delta)
 {
-
 }
 
 void UiManager::render()

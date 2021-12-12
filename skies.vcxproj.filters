@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Formats">
-      <UniqueIdentifier>{2d2eecec-ae0e-4dcc-a9ed-4e7d5f8e1465}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>{1a41733b-eba6-4a3c-ad2d-52c6e714da6a}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,9 @@
     </Filter>
     <Filter Include="Scripts\Source Files">
       <UniqueIdentifier>{48fdea13-f5de-4ec6-8f94-3fc5e4bb6372}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc">
+      <UniqueIdentifier>{2d2eecec-ae0e-4dcc-a9ed-4e7d5f8e1465}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +75,42 @@
     <ClInclude Include="scripts\Resources.h">
       <Filter>Scripts\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\ecs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\keybrd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\keybrdos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\renderos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\winos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\winres\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp">
@@ -116,9 +152,45 @@
     <ClCompile Include="ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\src\driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ecs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\engineos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\keybrdos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\physics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\renderos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\skii_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="skies.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="engine\winres\skies.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -129,16 +201,22 @@
     <Image Include="skies.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="engine\winres\skies.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="engine\winres\small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="game_format.txt">
-      <Filter>Formats</Filter>
+      <Filter>Doc</Filter>
     </Text>
     <Text Include="level_format.txt">
-      <Filter>Formats</Filter>
+      <Filter>Doc</Filter>
     </Text>
     <Text Include="skii_format.txt">
-      <Filter>Formats</Filter>
+      <Filter>Doc</Filter>
     </Text>
     <Text Include="assets\game.txt">
       <Filter>Assets</Filter>
@@ -150,13 +228,25 @@
       <Filter>Assets</Filter>
     </Text>
     <Text Include="ui_format.txt">
-      <Filter>Formats</Filter>
+      <Filter>Doc</Filter>
     </Text>
     <Text Include="assets\level1.ui.txt">
       <Filter>Assets</Filter>
     </Text>
     <Text Include="assets\london.skii.txt">
       <Filter>Assets</Filter>
+    </Text>
+    <Text Include="doc\game_format.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="doc\level_format.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="doc\skii_format.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="doc\ui_format.txt">
+      <Filter>Doc</Filter>
     </Text>
   </ItemGroup>
 </Project>

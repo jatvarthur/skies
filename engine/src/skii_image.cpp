@@ -1,4 +1,4 @@
-#include "render.h"
+#include "..\render.h"
 #include <vector>
 
 SkiiImage::SkiiImage(int width, int height)

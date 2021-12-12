@@ -10,6 +10,6 @@ str2
 ...
 I (image) Id X Y 0 0 File_name
 L (label) Id X Y Fg_color Bg_color Str_until_CRLF
-N (number) Id X Y Fg_color Bg_color Width Value
+N (number) Id X Y Fg_color Bg_color Width Align (0 - left, 1 - center, 2 - right) Currency_char_code (0 - none) Value
 B (button) Id X Y Fg_color Bg_color Bg_focused_color Fg_disabled_color Row Col Width Str_until_CRLF
 -- Row, Col == -1 if not in Grid layout

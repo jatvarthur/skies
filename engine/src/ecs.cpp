@@ -1,6 +1,6 @@
 #include <cassert>
 #include <cmath>
-#include "ecs.h"
+#include "..\ecs.h"
 
 
 ScriptRegistry& ScriptRegistry::get()

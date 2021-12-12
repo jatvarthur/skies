@@ -2,7 +2,7 @@
 #include <fstream>
 #include <cassert>
 #include <cstdlib>
-#include "ecs.h"
+#include "..\ecs.h"
 
 
 extern PhysicsConsts g_physConsts;

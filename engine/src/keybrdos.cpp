@@ -1,6 +1,6 @@
-#include "winos.h"
-#include "keybrd.h"
-#include "keybrdos.h"
+#include "..\winos.h"
+#include "..\keybrd.h"
+#include "..\keybrdos.h"
 
 // Bitmask: 
 //   bit 0x01 -> key is down

@@ -1,8 +1,8 @@
-#include "winos.h"
-#include "resource.h"
-#include "game.h"
-#include "renderos.h"
-#include "keybrdos.h"
+#include "..\winos.h"
+#include "..\winres\resource.h"
+#include "..\game.h"
+#include "..\renderos.h"
+#include "..\keybrdos.h"
 
 
 const float DELTA_STEP = 1.0f / 30.0f;

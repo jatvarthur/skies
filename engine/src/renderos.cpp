@@ -1,6 +1,6 @@
-#include "winos.h"
-#include "render.h"
-#include "renderos.h"
+#include "..\winos.h"
+#include "..\render.h"
+#include "..\renderos.h"
 
 
 struct RenderContext {
@@ -321,22 +321,9 @@ static void renderScreen(HDC hdc)
 	}
 }
 
-extern int g_fps;
-
-static void renderFps(HDC hdc)
-{
-	char buf[40] = { 0 };
-	snprintf(buf, 40, "%dfps", g_fps);
-
-	SetTextColor(hdc, 0xFFFFFF);
-	SetBkColor(hdc, 0xBB);
-	TextOutA(hdc, 10, 10, buf, strlen(buf));
-}
-
 void render()
 {
 	renderScreen(pCtx->hOffscreenDC);
-	renderFps(pCtx->hOffscreenDC);
 
 	RECT rect;
 	GetClientRect(pCtx->hWnd, &rect);	

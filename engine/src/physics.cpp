@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cmath>
-#include "ecs.h"
-#include "level.h"
+#include "..\ecs.h"
+#include "..\level.h"
 
 extern PhysicsConsts g_physConsts;
 extern LevelDesc g_level;

@@ -4,9 +4,9 @@ level1
 1 #
 1
 
-2
+3
 1
-P 112 48 180
+P 60 50 180
 Y 500 80.0
 R @ 27 0 1 shdZeppelinLight 2 30.0 7.0
 S ZeppelinScript 150.0 0.5 20 100 0 12 3 0 1
@@ -21,3 +21,23 @@ S TradePostScript
 6 4 25 4 20 
 2 1 25 4 20 
 1 1 25 4 20
+London
+2
+Hello, stranger!
+You stand amidst crowded area...
+
+3
+P 40 22 0
+Y 0 0.0
+R T 27 3 0
+S TradePostScript 
+4 4 100 2 10 
+0 0 10 4 20 
+0 2 25 8 30 
+0 0 10 2 10 
+3 1 25 5 15
+Lidl
+3
+Lidl is a frontier industrial center,
+almost all of the empire's alloys are
+melted here...
