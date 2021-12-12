@@ -141,8 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ecs.h" />
-    <ClInclude Include="engine.h" />
     <ClInclude Include="engine\ecs.h" />
     <ClInclude Include="engine\engine.h" />
     <ClInclude Include="engine\game.h" />
@@ -155,24 +153,11 @@
     <ClInclude Include="engine\ui.h" />
     <ClInclude Include="engine\winos.h" />
     <ClInclude Include="engine\winres\resource.h" />
-    <ClInclude Include="keybrd.h" />
-    <ClInclude Include="keybrdos.h" />
-    <ClInclude Include="level.h" />
-    <ClInclude Include="render.h" />
-    <ClInclude Include="renderos.h" />
     <ClInclude Include="scripts\Resources.h" />
     <ClInclude Include="scripts\TradePost.h" />
     <ClInclude Include="scripts\Zeppelin.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="ui.h" />
-    <ClInclude Include="winos.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="game.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="driver.cpp" />
-    <ClCompile Include="ecs.cpp" />
-    <ClCompile Include="engineos.cpp" />
     <ClCompile Include="engine\src\driver.cpp" />
     <ClCompile Include="engine\src\ecs.cpp" />
     <ClCompile Include="engine\src\engineos.cpp" />
@@ -184,26 +169,15 @@
     <ClCompile Include="engine\src\shader.cpp" />
     <ClCompile Include="engine\src\skii_image.cpp" />
     <ClCompile Include="engine\src\ui.cpp" />
-    <ClCompile Include="game.cpp" />
-    <ClCompile Include="keybrdos.cpp" />
-    <ClCompile Include="level.cpp" />
-    <ClCompile Include="physics.cpp" />
-    <ClCompile Include="renderos.cpp" />
     <ClCompile Include="scripts\src\TradePost.cpp" />
     <ClCompile Include="scripts\src\Zeppelin.cpp" />
-    <ClCompile Include="shader.cpp" />
-    <ClCompile Include="skii_image.cpp" />
-    <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine\winres\skies.rc" />
-    <ResourceCompile Include="skies.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="engine\winres\skies.ico" />
     <Image Include="engine\winres\small.ico" />
-    <Image Include="skies.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\game.txt" />
@@ -215,10 +189,6 @@
     <Text Include="doc\level_format.txt" />
     <Text Include="doc\skii_format.txt" />
     <Text Include="doc\ui_format.txt" />
-    <Text Include="game_format.txt" />
-    <Text Include="level_format.txt" />
-    <Text Include="skii_format.txt" />
-    <Text Include="ui_format.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

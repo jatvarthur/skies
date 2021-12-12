@@ -30,47 +30,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="winos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="keybrd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="keybrdos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ecs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="scripts\Zeppelin.h">
       <Filter>Scripts\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TradePost.h">
       <Filter>Scripts\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Resources.h">
       <Filter>Scripts\Header Files</Filter>
@@ -113,44 +77,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="driver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="renderos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engineos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="skii_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="keybrdos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ecs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scripts\src\Zeppelin.cpp">
       <Filter>Scripts\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="physics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scripts\src\TradePost.cpp">
       <Filter>Scripts\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\driver.cpp">
       <Filter>Source Files</Filter>
@@ -187,20 +118,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="skies.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="engine\winres\skies.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="skies.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="engine\winres\skies.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -209,15 +131,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="game_format.txt">
-      <Filter>Doc</Filter>
-    </Text>
-    <Text Include="level_format.txt">
-      <Filter>Doc</Filter>
-    </Text>
-    <Text Include="skii_format.txt">
-      <Filter>Doc</Filter>
-    </Text>
     <Text Include="assets\game.txt">
       <Filter>Assets</Filter>
     </Text>
@@ -226,9 +139,6 @@
     </Text>
     <Text Include="assets\level1.txt">
       <Filter>Assets</Filter>
-    </Text>
-    <Text Include="ui_format.txt">
-      <Filter>Doc</Filter>
     </Text>
     <Text Include="assets\level1.ui.txt">
       <Filter>Assets</Filter>
